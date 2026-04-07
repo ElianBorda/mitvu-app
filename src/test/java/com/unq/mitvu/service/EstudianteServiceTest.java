@@ -40,16 +40,16 @@ public class EstudianteServiceTest {
     }
 
     @Test
-    public void testCrearestudiante() {
-        Estudiante nuevaestudiante = new Estudiante("estudiante 3");
-        Estudiante estudianteGuardada = estudianteService.crear(nuevaestudiante);
+    public void testCrearEstudiante() {
+        Estudiante nuevoEstudiante = new Estudiante("estudiante 3");
+        Estudiante estudianteGuardado = estudianteService.crear(nuevoEstudiante);
 
-        assertNotNull(estudianteGuardada.getId());
-        assertEquals("estudiante 3", estudianteGuardada.getNombre());
+        assertNotNull(estudianteGuardado.getId());
+        assertEquals("estudiante 3", estudianteGuardado.getNombre());
     }
 
     @Test
-    public void testCrearTodasLasestudiantes() {
+    public void testCrearTodosLosEstudiantes() {
         estudianteDAO.deleteAll();
         List<Estudiante> estudiantes = new ArrayList<>();
         estudiantes.add(new Estudiante("estudiante A"));
@@ -61,31 +61,31 @@ public class EstudianteServiceTest {
     }
 
     @Test
-    public void testObtenerestudiantePorId() {
-        Estudiante estudianteEncontrada = estudianteService.obtenerPorId(estudiante.getId());
+    public void testObtenerEstudiantePorId() {
+        Estudiante estudianteEncontrado = estudianteService.obtenerPorId(estudiante.getId());
 
-        assertNotNull(estudianteEncontrada);
-        assertEquals(estudiante.getId(), estudianteEncontrada.getId());
-        assertEquals("Nacho", estudianteEncontrada.getNombre());
+        assertNotNull(estudianteEncontrado);
+        assertEquals(estudiante.getId(), estudianteEncontrado.getId());
+        assertEquals("Nacho", estudianteEncontrado.getNombre());
     }
 
     @Test
-    public void testModificarestudiantePorId() {
-        Estudiante estudianteModificada = new Estudiante("estudiante Modificada");
-        Estudiante estudianteActualizada = estudianteService.modificarPorId(estudiante.getId(), estudianteModificada);
+    public void testModificarEstudiantePorId() {
+        Estudiante estudianteModificado = new Estudiante("estudiante modificado");
+        Estudiante estudianteActualizado = estudianteService.modificarPorId(estudiante.getId(), estudianteModificado);
 
-        assertEquals(estudiante.getId(), estudianteActualizada.getId());
-        assertEquals("estudiante Modificada", estudianteActualizada.getNombre());
+        assertEquals(estudiante.getId(), estudianteActualizado.getId());
+        assertEquals("estudiante modificado", estudianteActualizado.getNombre());
     }
 
     @Test
-    public void testEliminarestudiantePorId() {
+    public void testEliminarEstudiantePorId() {
         estudianteService.eliminarPorId(estudiante.getId());
         assertNull(estudianteDAO.findById(estudiante.getId()).orElse(null));
     }
 
     @Test
-    public void testEliminarTodasLasestudiantes() {
+    public void testEliminarTodosLosEstudiantes() {
         estudianteService.eliminarTodo();
         assertEquals(0, estudianteDAO.count());
     }

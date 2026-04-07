@@ -33,7 +33,13 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     public Estudiante modificarPorId(String id, Estudiante estudiante) {
         Estudiante estudianteOg = estudianteDAO.getById(id);
+
         estudianteOg.setNombre(estudiante.getNombre());
+        estudianteOg.setApellido(estudiante.getApellido());
+        estudianteOg.setDni(estudiante.getDni());
+        estudiante.setCarrera(estudiante.getCarrera());
+        estudianteOg.setCantidad_asistencias(estudiante.getCantidad_asistencias());
+        estudianteOg.setComision_id(estudiante.getComision_id());
 
         return estudianteDAO.save(estudianteOg);
     }
