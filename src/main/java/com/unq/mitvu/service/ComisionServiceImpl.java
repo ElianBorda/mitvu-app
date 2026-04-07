@@ -2,7 +2,6 @@ package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.ComisionDAO;
 import com.unq.mitvu.model.Comision;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
