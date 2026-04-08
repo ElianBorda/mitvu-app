@@ -6,6 +6,8 @@ import com.unq.mitvu.service.TutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/tutores")
 @CrossOrigin(origins = "*")
@@ -19,6 +21,11 @@ public class TutorController {
         Tutor tutor = tutorBody.toTutor();
         tutorService.crear(tutor);
         return tutor;
+    }
+
+    @GetMapping
+    public List<Tutor> obtenerTodos() {
+        return tutorService.obtenerTodos();
     }
 
 }

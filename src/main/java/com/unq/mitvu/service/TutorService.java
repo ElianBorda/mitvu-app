@@ -8,6 +8,7 @@ public interface TutorService {
     Tutor crear(Tutor tutor);
     void crearTodos(List<Tutor> tutores);
     Tutor obtenerPorId(String id);
+    List<Tutor> obtenerTodos();
     Tutor modificarPorId(String id, Tutor tutor);
     void eliminarPorId(String id);
     void eliminarTodo();

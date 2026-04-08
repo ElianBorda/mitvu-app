@@ -31,6 +31,9 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
+    public List<Estudiante> obtenerTodos() { return estudianteDAO.findAll(); }
+
+    @Override
     public Estudiante modificarPorId(String id, Estudiante estudiante) {
         Estudiante estudianteOg = estudianteDAO.getById(id);
 

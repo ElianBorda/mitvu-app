@@ -1,6 +1,7 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.TutorDAO;
+import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.model.Tutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,6 +68,13 @@ public class TutorServiceTest {
         assertNotNull(tutorEncontrado);
         assertEquals(tutor.getId(), tutorEncontrado.getId());
         assertEquals("Juan", tutorEncontrado.getNombre());
+    }
+
+    @Test
+    public void testObtenerTodosLosTutores() {
+        List<Tutor> tutores = tutorService.obtenerTodos();
+        assertEquals(2, tutores.size());
+        assertEquals(tutores.get(0).getNombre(), tutor.getNombre());
     }
 
     @Test
