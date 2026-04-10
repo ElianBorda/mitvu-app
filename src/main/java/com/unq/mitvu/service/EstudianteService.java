@@ -9,6 +9,7 @@ public interface EstudianteService {
     Estudiante crear(Estudiante estudiante);
     void crearTodos(List<Estudiante> estudiantes);
     Estudiante obtenerPorId(String id);
+    List<Estudiante> obtenerTodos();
     Estudiante modificarPorId(String id, Estudiante estudiante);
     void eliminarPorId(String id);
     void eliminarTodo();

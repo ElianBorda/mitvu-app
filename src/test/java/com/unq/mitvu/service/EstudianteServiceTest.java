@@ -70,6 +70,13 @@ public class EstudianteServiceTest {
     }
 
     @Test
+    public void testObtenerTodosLosEstudiantes() {
+        List<Estudiante> estudiantes = estudianteService.obtenerTodos();
+        assertEquals(2, estudiantes.size());
+        assertEquals(estudiantes.get(0).getNombre(), estudiante.getNombre());
+    }
+
+    @Test
     public void testModificarEstudiantePorId() {
         Estudiante estudianteModificado = new Estudiante("estudiante modificado");
         Estudiante estudianteActualizado = estudianteService.modificarPorId(estudiante.getId(), estudianteModificado);

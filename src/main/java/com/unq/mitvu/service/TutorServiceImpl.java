@@ -31,6 +31,9 @@ public class TutorServiceImpl implements TutorService {
     }
 
     @Override
+    public List<Tutor> obtenerTodos() { return tutorDAO.findAll(); }
+
+    @Override
     public Tutor modificarPorId(String id, Tutor tutor) {
         Tutor tutorOg = tutorDAO.getById(id);
         if (tutorOg != null) {}
