@@ -2,8 +2,10 @@ package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.ComisionDAO;
 import com.unq.mitvu.model.Comision;
+import com.unq.mitvu.model.Turno;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -19,7 +21,6 @@ public class ComisionServiceImpl implements ComisionService {
     public Comision crear(Comision comision) {
         return comisionDAO.save(comision);
     }
-
     @Override
     public void crearTodos(List<Comision> comisiones) {
         comisionDAO.saveAll(comisiones);
@@ -32,10 +33,15 @@ public class ComisionServiceImpl implements ComisionService {
 
     @Override
     public Comision modificarPorId(String id, Comision comision) {
-        Comision comision1 = comisionDAO.getById(id);
-        comision1.setNombre(comision.getNombre());
-
-        return comisionDAO.save(comision1);
+        Comision comisionRecuperada = comisionDAO.getById(id);
+        comisionRecuperada.setAula(comision.getAula());
+        comisionRecuperada.setCarrera(comision.getCarrera());
+        comisionRecuperada.setDepartamento(comision.getDepartamento());
+        comisionRecuperada.setLocalidad(comision.getLocalidad());
+        comisionRecuperada.setNumero(comision.getNumero());
+        comisionRecuperada.setTurno(comision.getTurno());
+        comisionRecuperada.setTutor(comision.getTutor());
+        return comisionDAO.save(comisionRecuperada);
     }
 
     @Override

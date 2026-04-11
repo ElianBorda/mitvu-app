@@ -4,19 +4,47 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ToString
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Document(collection = "comisiones")
 public class Comision {
 
     @Id
     private String id;
-    private String nombre;
+    private Integer numero;
+    private String localidad;
+    private String departamento;
+    private String carrera;
+    private String aula;
+    private Horario horarioInicio;
+    private Horario horarioFin;
+    private Turno turno;
+    private Tutor tutor;
+    private List<Estudiante> estudiantes = new ArrayList<>();
 
-    public Comision(String nombre) {
-        this.nombre = nombre;
+    public Comision(
+            Tutor tutor,
+            Horario horarioFin,
+            Horario horarioInicio,
+            String aula,
+            String carrera,
+            String departamento,
+            String localidad,
+            Integer numero
+    ) {
+        this.tutor = tutor;
+        this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
+        this.horarioFin = horarioFin;
+        this.horarioInicio = horarioInicio;
+        this.aula = aula;
+        this.carrera = carrera;
+        this.departamento = departamento;
+        this.localidad = localidad;
+        this.numero = numero;
     }
 }
