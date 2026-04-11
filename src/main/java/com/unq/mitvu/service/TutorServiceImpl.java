@@ -36,12 +36,11 @@ public class TutorServiceImpl implements TutorService {
     @Override
     public Tutor modificarPorId(String id, Tutor tutor) {
         Tutor tutorOg = tutorDAO.getById(id);
-        if (tutorOg != null) {}
 
         tutorOg.setNombre(tutor.getNombre());
         tutorOg.setApellido(tutor.getApellido());
         tutorOg.setDni(tutor.getDni());
-        tutorOg.setComisiones_ids(tutor.getComisiones_ids());
+        tutorOg.setMail(tutor.getMail());
 
         return tutorDAO.save(tutorOg);
     }

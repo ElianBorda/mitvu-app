@@ -45,6 +45,11 @@ public class ComisionServiceImpl implements ComisionService {
     }
 
     @Override
+    public List<Comision> obtenerTodos() {
+        return comisionDAO.findAll();
+    }
+
+    @Override
     public void eliminarPorId(String id) {
         comisionDAO.deleteById(id);
     }

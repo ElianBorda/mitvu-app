@@ -1,13 +1,19 @@
 package com.unq.mitvu.body;
 
+import com.unq.mitvu.body.drafts.EstudianteDraft;
+import com.unq.mitvu.body.drafts.TutorDraft;
 import com.unq.mitvu.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.unq.mitvu.body.drafts.ComisionEstudianteDraft.toEstudiantesDraft;
+import static com.unq.mitvu.body.drafts.TutorDraft.toTutorDraft;
 
 @Getter
 @Setter
@@ -15,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ComisionBody {
 
+    private String id;
     private Integer numero;
     private String localidad;
     private String departamento;
@@ -22,10 +29,13 @@ public class ComisionBody {
     private String aula;
     private String horarioInicio;
     private String horarioFin;
-    private Tutor tutor;
+    private TutorDraft tutor;
+    private List<EstudianteDraft> estudiantes;
 
-    public static ComisionBody fromComision(Comision comision) {
+
+    static public ComisionBody fromComision(Comision comision){
         return new ComisionBody(
+                comision.getId(),
                 comision.getNumero(),
                 comision.getLocalidad(),
                 comision.getDepartamento(),
@@ -33,11 +43,12 @@ public class ComisionBody {
                 comision.getAula(),
                 comision.getHorarioInicio().toString(),
                 comision.getHorarioFin().toString(),
-                comision.getTutor()
+                toTutorDraft(comision.getTutor()),
+                toEstudiantesDraft(comision.getEstudiantes())
         );
     }
 
-    public Comision toComision() {
+    public Comision toComision(){
         Horario horarioInicioConvertido = new Horario(
                 Integer.parseInt(this.horarioInicio.split(":")[0]),
                 Integer.parseInt(this.horarioInicio.split(":")[1])
@@ -48,7 +59,7 @@ public class ComisionBody {
         );
 
         return new Comision(
-                this.tutor,
+                this.toTutor(this.tutor),
                 horarioFinConvertido,
                 horarioInicioConvertido,
                 this.aula,
@@ -57,5 +68,19 @@ public class ComisionBody {
                 this.localidad,
                 this.numero
         );
+    }
+
+    public Tutor toTutor(TutorDraft tutorDraft){
+        if (tutorDraft == null){
+            return null;
+        }
+
+        return (
+                new Tutor(
+                tutorDraft.getApellido(),
+                tutorDraft.getNombre(),
+                tutorDraft.getDni(),
+                tutorDraft.getMail()
+        ));
     }
 }

@@ -4,6 +4,8 @@ import com.unq.mitvu.body.TutorBody;
 import com.unq.mitvu.model.Tutor;
 import com.unq.mitvu.service.TutorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,16 +18,39 @@ public class TutorController {
     @Autowired
     private TutorService tutorService;
 
-    @PostMapping
-    public Tutor crear(@RequestBody TutorBody tutorBody) {
-        Tutor tutor = tutorBody.toTutor();
-        tutorService.crear(tutor);
-        return tutor;
-    }
-
     @GetMapping
-    public List<Tutor> obtenerTodos() {
-        return tutorService.obtenerTodos();
+    public ResponseEntity<List<TutorBody>> getAllTutores() {
+        List<Tutor> tutores = tutorService.obtenerTodos();
+        return new ResponseEntity<>(tutores.stream().map(TutorBody::fromTutor).toList(), HttpStatus.OK);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TutorBody> getTutorById(@PathVariable String id) {
+        Tutor tutor = tutorService.obtenerPorId(id);
+        return new ResponseEntity<>(TutorBody.fromTutor(tutor), HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<TutorBody> createTutor(@RequestBody TutorBody body) {
+        Tutor tutor = tutorService.crear(body.toTutor());
+        return new ResponseEntity<>(TutorBody.fromTutor(tutor), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TutorBody> updateTutor(@PathVariable String id, @RequestBody TutorBody body) {
+        Tutor tutor = tutorService.modificarPorId(id, body.toTutor());
+        return new ResponseEntity<>(TutorBody.fromTutor(tutor), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTutor(@PathVariable String id) {
+        tutorService.eliminarPorId(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAllTutores() {
+        tutorService.eliminarTodo();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

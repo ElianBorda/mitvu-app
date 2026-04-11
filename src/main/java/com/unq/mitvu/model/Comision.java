@@ -25,7 +25,7 @@ public class Comision {
     private Horario horarioFin;
     private Turno turno;
     private Tutor tutor;
-    private List<Estudiante> estudiantes = new ArrayList<>();
+    private ArrayList<Estudiante> estudiantes = new ArrayList<>();
 
     public Comision(
             Tutor tutor,
@@ -38,6 +38,27 @@ public class Comision {
             Integer numero
     ) {
         this.tutor = tutor;
+        this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
+        this.horarioFin = horarioFin;
+        this.horarioInicio = horarioInicio;
+        this.aula = aula;
+        this.carrera = carrera;
+        this.departamento = departamento;
+        this.localidad = localidad;
+        this.numero = numero;
+    }
+
+    public Comision(
+            ArrayList<Estudiante> estudiantes,
+            Horario horarioFin,
+            Horario horarioInicio,
+            String aula,
+            String carrera,
+            String departamento,
+            String localidad,
+            Integer numero
+    ) {
+        this.estudiantes = estudiantes;
         this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
         this.horarioFin = horarioFin;
         this.horarioInicio = horarioInicio;

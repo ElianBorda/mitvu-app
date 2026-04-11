@@ -34,11 +34,12 @@ public class ComisionServiceTest {
 
     @BeforeEach
     public void setUp() {
-        tutor = tutorService.crear(new Tutor(
+        tutor = tutorService.crear(
+                new Tutor(
                 "Borda",
                 "Elian",
                 "44862090",
-                new ArrayList<>()
+                    "elian@gmail.com"
         ));
 
         horarioInicio = new Horario(8, 0);

@@ -1,6 +1,5 @@
 package com.unq.mitvu.service;
 
-import com.unq.mitvu.body.EstudianteBody;
 import com.unq.mitvu.dao.EstudianteDAO;
 import com.unq.mitvu.model.Estudiante;
 import org.springframework.stereotype.Service;
@@ -41,8 +40,8 @@ public class EstudianteServiceImpl implements EstudianteService {
         estudianteOg.setApellido(estudiante.getApellido());
         estudianteOg.setDni(estudiante.getDni());
         estudiante.setCarrera(estudiante.getCarrera());
-        estudianteOg.setCantidad_asistencias(estudiante.getCantidad_asistencias());
-        estudianteOg.setComision_id(estudiante.getComision_id());
+        estudianteOg.setCantidadAsistencias(estudiante.getCantidadAsistencias());
+        estudianteOg.setComision(estudiante.getComision());
 
         return estudianteDAO.save(estudianteOg);
     }

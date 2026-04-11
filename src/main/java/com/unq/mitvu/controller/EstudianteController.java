@@ -4,6 +4,8 @@ import com.unq.mitvu.body.EstudianteBody;
 import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.service.EstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,14 +19,44 @@ public class EstudianteController {
     private EstudianteService estudianteService;
 
     @PostMapping
-    public Estudiante crear(@RequestBody EstudianteBody estudianteBody){
-        Estudiante estudiante = estudianteBody.toEstudiante();
-        return estudianteService.crear(estudiante);
+    public ResponseEntity<EstudianteBody> createEstudiante(@RequestBody EstudianteBody body) {
+        Estudiante estudiante = estudianteService.crear(body.toEstudiante());
+        return new ResponseEntity<>(EstudianteBody.fromEstudiante(estudiante), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<Estudiante> obtenerTodos() {
-        return estudianteService.obtenerTodos();
+    public ResponseEntity<List<EstudianteBody>> getAllEstudiantes() {
+        List<Estudiante> estudiantes = estudianteService.obtenerTodos();
+        List<EstudianteBody> estudiantesBody = estudiantes.stream().map(
+                EstudianteBody::fromEstudiante
+        ).toList();
+
+        return new ResponseEntity<>(estudiantesBody, HttpStatus.OK);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EstudianteBody> getEstudianteById(@PathVariable String id) {
+        Estudiante estudiante = estudianteService.obtenerPorId(id);
+        return new ResponseEntity<>(EstudianteBody.fromEstudiante(estudiante), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EstudianteBody> updateEstudiante(@PathVariable String id, @RequestBody EstudianteBody body) {
+        Estudiante estudiante = estudianteService.modificarPorId(id, body.toEstudiante());
+        return new ResponseEntity<>(EstudianteBody.fromEstudiante(estudiante), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEstudiante(@PathVariable String id) {
+        estudianteService.eliminarPorId(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAllEstudiantes() {
+        estudianteService.eliminarTodo();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 
 }

@@ -9,6 +9,7 @@ public interface ComisionService {
     void crearTodos(List<Comision> comisiones);
     Comision obtenerPorId(String id);
     Comision modificarPorId(String id, Comision comision);
+    List<Comision> obtenerTodos();
     void eliminarPorId(String id);
     void eliminarTodo();
 
