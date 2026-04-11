@@ -19,32 +19,8 @@ public class ComisionServiceImpl implements ComisionService {
 
     @Override
     public Comision crear(Comision comision) {
-        List<Comision> comisionesExistentes = comisionDAO.findByLocalidadAndDepartamentoAndCarrera(
-                comision.getLocalidad(),
-                comision.getDepartamento(),
-                comision.getCarrera()
-        );
-        comision.setNumero(comisionesExistentes.size() + 1);
-
-        comision.setTurno(determinarTurno(comision.getHorario()));
-
         return comisionDAO.save(comision);
     }
-
-    private Turno determinarTurno(String horario) {
-        String[] partes = horario.split(" a ");
-        String horaInicioStr = partes[0].split(":")[0];
-        int horaInicio = Integer.parseInt(horaInicioStr);
-
-        if (horaInicio >= 8 && horaInicio < 12) {
-            return Turno.MANANA;
-        } else if (horaInicio >= 12 && horaInicio < 18) {
-            return Turno.TARDE;
-        } else {
-            return Turno.NOCHE;
-        }
-    }
-
     @Override
     public void crearTodos(List<Comision> comisiones) {
         comisionDAO.saveAll(comisiones);
@@ -57,11 +33,15 @@ public class ComisionServiceImpl implements ComisionService {
 
     @Override
     public Comision modificarPorId(String id, Comision comision) {
-        Comision comision1 = comisionDAO.getById(id);
-        // No se puede modificar el nombre, se elimina el campo
-        // comision1.setNombre(comision.getNombre());
-
-        return comisionDAO.save(comision1);
+        Comision comisionRecuperada = comisionDAO.getById(id);
+        comisionRecuperada.setAula(comision.getAula());
+        comisionRecuperada.setCarrera(comision.getCarrera());
+        comisionRecuperada.setDepartamento(comision.getDepartamento());
+        comisionRecuperada.setLocalidad(comision.getLocalidad());
+        comisionRecuperada.setNumero(comision.getNumero());
+        comisionRecuperada.setTurno(comision.getTurno());
+        comisionRecuperada.setTutor(comision.getTutor());
+        return comisionDAO.save(comisionRecuperada);
     }
 
     @Override

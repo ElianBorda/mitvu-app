@@ -11,7 +11,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Document(collection = "comisiones")
 public class Comision {
 
@@ -22,19 +21,30 @@ public class Comision {
     private String departamento;
     private String carrera;
     private String aula;
-    private String horario;
+    private Horario horarioInicio;
+    private Horario horarioFin;
     private Turno turno;
     private Tutor tutor;
-    private String mailTutor;
-    private List<String> alumnosDni = new ArrayList<>();
+    private List<Estudiante> estudiantes = new ArrayList<>();
 
-    public Comision(String localidad, String departamento, String carrera, String aula, String horario, Tutor tutor, String mailTutor) {
-        this.localidad = localidad;
-        this.departamento = departamento;
-        this.carrera = carrera;
-        this.aula = aula;
-        this.horario = horario;
+    public Comision(
+            Tutor tutor,
+            Horario horarioFin,
+            Horario horarioInicio,
+            String aula,
+            String carrera,
+            String departamento,
+            String localidad,
+            Integer numero
+    ) {
         this.tutor = tutor;
-        this.mailTutor = mailTutor;
+        this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
+        this.horarioFin = horarioFin;
+        this.horarioInicio = horarioInicio;
+        this.aula = aula;
+        this.carrera = carrera;
+        this.departamento = departamento;
+        this.localidad = localidad;
+        this.numero = numero;
     }
 }
