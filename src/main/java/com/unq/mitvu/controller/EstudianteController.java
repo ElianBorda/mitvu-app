@@ -1,7 +1,9 @@
 package com.unq.mitvu.controller;
 
 import com.unq.mitvu.body.EstudianteBody;
+import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
+import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.EstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +20,16 @@ public class EstudianteController {
     @Autowired
     private EstudianteService estudianteService;
 
+    @Autowired
+    private ComisionService comisionService;
+
     @PostMapping
     public ResponseEntity<EstudianteBody> createEstudiante(@RequestBody EstudianteBody body) {
-        Estudiante estudiante = estudianteService.crear(body.toEstudiante());
+        Estudiante estudiante = body.toEstudiante();
+
+        estudiante.setComision(comisionService.obtenerPorId(body.getComision_id()));
+
+        estudianteService.crear(estudiante);
         return new ResponseEntity<>(EstudianteBody.fromEstudiante(estudiante), HttpStatus.CREATED);
     }
 

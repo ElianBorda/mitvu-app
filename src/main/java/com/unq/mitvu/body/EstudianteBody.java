@@ -26,7 +26,33 @@ public class EstudianteBody {
     private String dni;
     private String carrera;
     private Integer cantidadAsistencias;
+    private String comision_id;
+
+    static public EstudianteBody fromEstudiante(Estudiante estudiante) {
+        return new  EstudianteBody(
+                estudiante.getId(),
+                estudiante.getApellido(),
+                estudiante.getNombre(),
+                estudiante.getDni(),
+                estudiante.getCarrera(),
+                estudiante.getCantidadAsistencias(),
+                estudiante.getComision().getId()
+        );
+    }
+
+    public Estudiante toEstudiante() {
+        return new Estudiante(
+                apellido,
+                nombre,
+                dni,
+                carrera,
+                cantidadAsistencias
+        );
+    }
+
+    /*
     private ComisionDeEstudianteDraft comision;
+
 
     static public EstudianteBody fromEstudiante(Estudiante estudiante){
         return new EstudianteBody(
@@ -87,7 +113,7 @@ public class EstudianteBody {
         );
     }
 
-
+     */
 
 
 }

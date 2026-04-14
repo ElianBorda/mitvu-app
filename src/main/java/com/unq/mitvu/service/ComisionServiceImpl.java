@@ -6,6 +6,7 @@ import com.unq.mitvu.model.Turno;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +22,12 @@ public class ComisionServiceImpl implements ComisionService {
     public Comision crear(Comision comision) {
         return comisionDAO.save(comision);
     }
+
+    @Override
+    public List<Comision> obtenerSinTutor() {
+        return comisionDAO.findSinTutor();
+    }
+
     @Override
     public void crearTodos(List<Comision> comisiones) {
         comisionDAO.saveAll(comisiones);
@@ -29,6 +36,11 @@ public class ComisionServiceImpl implements ComisionService {
     @Override
     public Comision obtenerPorId(String id) {
         return comisionDAO.getById(id);
+    }
+
+    @Override
+    public ArrayList<Comision> obtenerTodosPorId(ArrayList<String> ids) {
+        return (ArrayList<Comision>) comisionDAO.findAllById(ids);
     }
 
     @Override

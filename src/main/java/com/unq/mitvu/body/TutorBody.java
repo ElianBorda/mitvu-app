@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.unq.mitvu.body.drafts.ComisionDeTutorDraft.toEstudiantesDraft;
 
@@ -27,6 +28,29 @@ public class TutorBody {
     private String nombre;
     private String dni;
     private String mail;
+    private List<String> comisiones_ids;
+
+    static public TutorBody fromTutor(Tutor tutor) {
+        return new TutorBody(
+                tutor.getId(),
+                tutor.getApellido(),
+                tutor.getNombre(),
+                tutor.getDni(),
+                tutor.getMail(),
+                tutor.getComisiones().stream().map(Comision::getId).toList()
+        );
+    }
+
+    public Tutor toTutor() {
+        return new Tutor(
+                apellido,
+                nombre,
+                dni,
+                mail
+        );
+    }
+
+    /*
     private ArrayList<ComisionDeTutorDraft> comisiones;
 
     static public TutorBody fromTutor(Tutor tutor){
@@ -118,4 +142,6 @@ public class TutorBody {
 
         return estudiantes;
     };
+
+     */
 }

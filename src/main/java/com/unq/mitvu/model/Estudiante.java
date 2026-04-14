@@ -19,22 +19,22 @@ public class Estudiante {
     private String dni;
     private String carrera;
     private Comision comision;
-    private int cantidadAsistencias;
+    private Integer cantidadAsistencias;
 
-    public Estudiante(int cantidadAsistencias, String carrera, String dni, String nombre, String apellido) {
-        this.cantidadAsistencias = cantidadAsistencias;
-        this.carrera = carrera;
-        this.dni = dni;
-        this.nombre = nombre;
+    public Estudiante(String apellido, String nombre, String dni, String carrera, Integer cantidadAsistencias, Comision comision) {
         this.apellido = apellido;
+        this.nombre = nombre;
+        this.dni = dni;
+        this.carrera = carrera;
+        this.cantidadAsistencias = cantidadAsistencias == null ? 0 : cantidadAsistencias;
+        this.comision = comision;
     }
 
-    public Estudiante(String apellido, String nombre, String dni, String carrera, Comision comision, Integer cantidadAsistencias) {
+    public Estudiante (String apellido, String nombre, String dni, String carrera, Integer cantidadAsistencias) {
         this.apellido = apellido;
         this.nombre = nombre;
         this.dni = dni;
         this.carrera = carrera;
-        this.comision = comision;
-        this.cantidadAsistencias = cantidadAsistencias == null ? 0 : cantidadAsistencias;
+        this.cantidadAsistencias = cantidadAsistencias;
     }
 }

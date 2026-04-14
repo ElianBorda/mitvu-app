@@ -2,12 +2,14 @@ package com.unq.mitvu.controller;
 
 import com.unq.mitvu.body.TutorBody;
 import com.unq.mitvu.model.Tutor;
+import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.TutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,6 +19,9 @@ public class TutorController {
 
     @Autowired
     private TutorService tutorService;
+
+    @Autowired
+    private ComisionService comisionService;
 
     @GetMapping
     public ResponseEntity<List<TutorBody>> getAllTutores() {
@@ -32,7 +37,12 @@ public class TutorController {
 
     @PostMapping
     public ResponseEntity<TutorBody> createTutor(@RequestBody TutorBody body) {
-        Tutor tutor = tutorService.crear(body.toTutor());
+        Tutor tutor = body.toTutor();
+        tutor.setComisiones(
+                new ArrayList<>(comisionService.obtenerTodosPorId((ArrayList<String>) body.getComisiones_ids()))
+        );
+
+        tutorService.crear(tutor);
         return new ResponseEntity<>(TutorBody.fromTutor(tutor), HttpStatus.CREATED);
     }
 
