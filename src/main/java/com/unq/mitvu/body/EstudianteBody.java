@@ -1,6 +1,6 @@
 package com.unq.mitvu.body;
 
-import com.unq.mitvu.body.drafts.ComisionTutorDraft;
+import com.unq.mitvu.body.drafts.ComisionDeEstudianteDraft;
 import com.unq.mitvu.body.drafts.TutorDraft;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.unq.mitvu.body.drafts.ComisionTutorDraft.toComisionTutorDraft;
+import static com.unq.mitvu.body.drafts.ComisionDeEstudianteDraft.toComisionTutorDraft;
 
 @Getter
 @Setter
@@ -26,7 +26,7 @@ public class EstudianteBody {
     private String dni;
     private String carrera;
     private Integer cantidadAsistencias;
-    private ComisionTutorDraft comision;
+    private ComisionDeEstudianteDraft comision;
 
     static public EstudianteBody fromEstudiante(Estudiante estudiante){
         return new EstudianteBody(
@@ -51,26 +51,26 @@ public class EstudianteBody {
         );
     }
 
-    public Comision toComision(ComisionTutorDraft comisionTutorDraft){
-        if (comisionTutorDraft == null) {
+    public Comision toComision(ComisionDeEstudianteDraft comisionDeEstudianteDraft){
+        if (comisionDeEstudianteDraft == null) {
             return null;
         }
 
         return new Comision(
-                this.toTutor(comisionTutorDraft.getTutor()),
+                this.toTutor(comisionDeEstudianteDraft.getTutor()),
                 new Horario(
-                        Integer.parseInt(comisionTutorDraft.getHorarioFin().split(":")[0]),
-                        Integer.parseInt(comisionTutorDraft.getHorarioFin().split(":")[1])
+                        Integer.parseInt(comisionDeEstudianteDraft.getHorarioFin().split(":")[0]),
+                        Integer.parseInt(comisionDeEstudianteDraft.getHorarioFin().split(":")[1])
                 ),
                 new Horario(
-                        Integer.parseInt(comisionTutorDraft.getHorarioInicio().split(":")[0]),
-                        Integer.parseInt(comisionTutorDraft.getHorarioInicio().split(":")[1])
+                        Integer.parseInt(comisionDeEstudianteDraft.getHorarioInicio().split(":")[0]),
+                        Integer.parseInt(comisionDeEstudianteDraft.getHorarioInicio().split(":")[1])
                 ),
-                comisionTutorDraft.getAula(),
-                comisionTutorDraft.getCarrera(),
-                comisionTutorDraft.getDepartamento(),
-                comisionTutorDraft.getLocalidad(),
-                comisionTutorDraft.getNumero()
+                comisionDeEstudianteDraft.getAula(),
+                comisionDeEstudianteDraft.getCarrera(),
+                comisionDeEstudianteDraft.getDepartamento(),
+                comisionDeEstudianteDraft.getLocalidad(),
+                comisionDeEstudianteDraft.getNumero()
         );
     }
 

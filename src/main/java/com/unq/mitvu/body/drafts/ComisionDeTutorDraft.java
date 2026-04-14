@@ -16,7 +16,7 @@ import static com.unq.mitvu.body.drafts.EstudianteDraft.toEstudianteDraft;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ComisionEstudianteDraft {
+public class ComisionDeTutorDraft {
 
     private String id;
     private Integer numero;
@@ -28,12 +28,12 @@ public class ComisionEstudianteDraft {
     private String horarioFin;
     private ArrayList<EstudianteDraft> estudiantes;
 
-    static public ComisionEstudianteDraft toComisionEstudianteDraft(Comision comision){
+    static public ComisionDeTutorDraft toComisionEstudianteDraft(Comision comision){
         if (comision == null) {
             return null;
         }
 
-        return new ComisionEstudianteDraft(
+        return new ComisionDeTutorDraft(
                 comision.getId(),
                 comision.getNumero(),
                 comision.getLocalidad(),
