@@ -1,6 +1,8 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.model.Comision;
+import com.unq.mitvu.model.Estudiante;
+import com.unq.mitvu.model.Tutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,5 +17,6 @@ public interface ComisionService {
     List<Comision> obtenerTodos();
     void eliminarPorId(String id);
     void eliminarTodo();
-
+    void agregarTutorAComisiones(Tutor tutor, ArrayList<String> comisiones_ids);
+    void agregarEstudianteAComision(Estudiante estudianteGuardado, String comision_id);
 }

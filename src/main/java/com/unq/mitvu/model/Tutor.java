@@ -2,6 +2,7 @@ package com.unq.mitvu.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class Tutor {
     private String nombre;
     private String dni;
     private String mail;
+
+    @DBRef
     private ArrayList<Comision> comisiones = new ArrayList<>();
 
     public Tutor (String nombre) {

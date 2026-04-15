@@ -26,10 +26,12 @@ public class EstudianteController {
     @PostMapping
     public ResponseEntity<EstudianteBody> createEstudiante(@RequestBody EstudianteBody body) {
         Estudiante estudiante = body.toEstudiante();
+        String comision_id = body.getComision_id();
 
-        estudiante.setComision(comisionService.obtenerPorId(body.getComision_id()));
+        estudiante.setComision(comisionService.obtenerPorId(comision_id));
+        Estudiante estudianteGuardado = estudianteService.crear(estudiante);
 
-        estudianteService.crear(estudiante);
+        comisionService.agregarEstudianteAComision(estudianteGuardado, comision_id);
         return new ResponseEntity<>(EstudianteBody.fromEstudiante(estudiante), HttpStatus.CREATED);
     }
 

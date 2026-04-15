@@ -1,6 +1,7 @@
 package com.unq.mitvu.controller;
 
 import com.unq.mitvu.body.TutorBody;
+import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Tutor;
 import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.TutorService;
@@ -38,12 +39,14 @@ public class TutorController {
     @PostMapping
     public ResponseEntity<TutorBody> createTutor(@RequestBody TutorBody body) {
         Tutor tutor = body.toTutor();
-        tutor.setComisiones(
-                new ArrayList<>(comisionService.obtenerTodosPorId((ArrayList<String>) body.getComisiones_ids()))
-        );
 
-        tutorService.crear(tutor);
-        return new ResponseEntity<>(TutorBody.fromTutor(tutor), HttpStatus.CREATED);
+        ArrayList<String> comisiones_ids = (ArrayList<String>) body.getComisiones_ids();
+        tutor.setComisiones(comisionService.obtenerTodosPorId(comisiones_ids));
+
+        Tutor tutorGuardado = tutorService.crear(tutor);
+        comisionService.agregarTutorAComisiones(tutorGuardado, comisiones_ids);
+
+        return new ResponseEntity<>(TutorBody.fromTutor(tutorGuardado), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
