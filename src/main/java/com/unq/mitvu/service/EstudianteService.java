@@ -1,6 +1,7 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.body.EstudianteBody;
+import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
 
 import java.util.List;
@@ -13,4 +14,5 @@ public interface EstudianteService {
     Estudiante modificarPorId(String id, Estudiante estudiante);
     void eliminarPorId(String id);
     void eliminarTodo();
+    void asignarEstudianteAComision(Estudiante estudiante, Comision comision);
 }
