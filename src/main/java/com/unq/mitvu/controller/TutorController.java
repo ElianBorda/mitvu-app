@@ -41,10 +41,18 @@ public class TutorController {
         Tutor tutor = body.toTutor();
 
         ArrayList<String> comisiones_ids = (ArrayList<String>) body.getComisiones_ids();
-        tutor.setComisiones(comisionService.obtenerTodosPorId(comisiones_ids));
 
-        Tutor tutorGuardado = tutorService.crear(tutor);
-        comisionService.agregarTutorAComisiones(tutorGuardado, comisiones_ids);
+        Tutor tutorGuardado;
+
+        if (comisiones_ids != null &&  !comisiones_ids.isEmpty()) {
+            tutor.setComisiones(comisionService.obtenerTodosPorId(comisiones_ids));
+            tutorGuardado = tutorService.crear(tutor);
+            comisionService.agregarTutorAComisiones(tutorGuardado, comisiones_ids);
+
+        }
+        else {
+            tutorGuardado = tutorService.crear(tutor);
+        }
 
         return new ResponseEntity<>(TutorBody.fromTutor(tutorGuardado), HttpStatus.CREATED);
     }

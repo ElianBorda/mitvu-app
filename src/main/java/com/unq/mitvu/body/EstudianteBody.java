@@ -36,7 +36,7 @@ public class EstudianteBody {
                 estudiante.getDni(),
                 estudiante.getCarrera(),
                 estudiante.getCantidadAsistencias(),
-                estudiante.getComision().getId()
+                estudiante.getComision() != null ? estudiante.getComision().getId() : null
         );
     }
 

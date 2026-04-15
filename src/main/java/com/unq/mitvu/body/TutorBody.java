@@ -37,7 +37,7 @@ public class TutorBody {
                 tutor.getNombre(),
                 tutor.getDni(),
                 tutor.getMail(),
-                tutor.getComisiones().stream().map(Comision::getId).toList()
+                tutor.getComisiones() != null ? tutor.getComisiones().stream().map(Comision::getId).toList() : null
         );
     }
 
