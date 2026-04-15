@@ -8,10 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/comision")
+@RequestMapping("/api/comisiones")
 @CrossOrigin(origins = "*")
 public class ComisionController {
 
@@ -22,6 +23,11 @@ public class ComisionController {
     public ResponseEntity<ComisionBody> getComisionById(@PathVariable String id) {
         Comision comision = comisionService.obtenerPorId(id);
         return new ResponseEntity<>(ComisionBody.fromComision(comision), HttpStatus.OK);
+    }
+
+    @GetMapping("/sin-tutor")
+    public List<Comision> getComisionesSinTutor() {
+        return comisionService.obtenerSinTutor();
     }
 
     @PostMapping

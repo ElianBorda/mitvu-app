@@ -2,6 +2,7 @@ package com.unq.mitvu.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -24,7 +25,11 @@ public class Comision {
     private Horario horarioInicio;
     private Horario horarioFin;
     private Turno turno;
+
+    @DBRef
     private Tutor tutor;
+
+    @DBRef
     private ArrayList<Estudiante> estudiantes = new ArrayList<>();
 
     public Comision(

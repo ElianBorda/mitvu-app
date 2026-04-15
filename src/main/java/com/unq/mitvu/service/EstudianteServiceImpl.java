@@ -1,6 +1,7 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.EstudianteDAO;
+import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +55,11 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     public void eliminarTodo() {
         estudianteDAO.deleteAll();
+    }
+
+    @Override
+    public void asignarEstudianteAComision(Estudiante estudiante, Comision comision) {
+        estudiante.setComision(comision);
+        estudianteDAO.save(estudiante);
     }
 }
