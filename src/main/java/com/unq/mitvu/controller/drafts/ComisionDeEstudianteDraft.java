@@ -1,22 +1,18 @@
-package com.unq.mitvu.body.drafts;
+package com.unq.mitvu.controller.drafts;
 
 import com.unq.mitvu.model.Comision;
-import com.unq.mitvu.model.Estudiante;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.unq.mitvu.body.drafts.EstudianteDraft.toEstudianteDraft;
+import static com.unq.mitvu.controller.drafts.TutorDraft.toTutorDraft;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ComisionDeTutorDraft {
+public class ComisionDeEstudianteDraft {
 
     private String id;
     private Integer numero;
@@ -26,14 +22,14 @@ public class ComisionDeTutorDraft {
     private String aula;
     private String horarioInicio;
     private String horarioFin;
-    private ArrayList<EstudianteDraft> estudiantes;
+    private TutorDraft tutor;
 
-    static public ComisionDeTutorDraft toComisionEstudianteDraft(Comision comision){
+    static public ComisionDeEstudianteDraft toComisionTutorDraft(Comision comision){
         if (comision == null) {
             return null;
         }
 
-        return new ComisionDeTutorDraft(
+        return new ComisionDeEstudianteDraft(
                 comision.getId(),
                 comision.getNumero(),
                 comision.getLocalidad(),
@@ -42,17 +38,7 @@ public class ComisionDeTutorDraft {
                 comision.getAula(),
                 comision.getHorarioInicio().toString(),
                 comision.getHorarioFin().toString(),
-                toEstudiantesDraft(comision.getEstudiantes())
+                toTutorDraft(comision.getTutor())
         );
-    }
-
-    static public ArrayList<EstudianteDraft> toEstudiantesDraft(List<Estudiante> estudiantes) {
-        ArrayList<EstudianteDraft> estudiantesDraft = new ArrayList<>();
-
-        for (Estudiante estudiante : estudiantes) {
-            estudiantesDraft.add(toEstudianteDraft(estudiante));
-        }
-
-        return estudiantesDraft;
     }
 }

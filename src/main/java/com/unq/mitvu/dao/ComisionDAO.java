@@ -16,4 +16,6 @@ public interface ComisionDAO extends MongoRepository<Comision, String> {
 
     @Query("{ 'tutor': null }")
     List<Comision> findSinTutor();
+
+    long countComisionsByDepartamentoAndLocalidadAndCarrera(String departamento, String localidad, String carrera);
 }

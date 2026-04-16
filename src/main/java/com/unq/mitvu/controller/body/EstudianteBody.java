@@ -1,17 +1,10 @@
-package com.unq.mitvu.body;
+package com.unq.mitvu.controller.body;
 
-import com.unq.mitvu.body.drafts.ComisionDeEstudianteDraft;
-import com.unq.mitvu.body.drafts.TutorDraft;
-import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
-import com.unq.mitvu.model.Horario;
-import com.unq.mitvu.model.Tutor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import static com.unq.mitvu.body.drafts.ComisionDeEstudianteDraft.toComisionTutorDraft;
 
 @Getter
 @Setter

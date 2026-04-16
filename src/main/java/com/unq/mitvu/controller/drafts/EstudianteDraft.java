@@ -1,4 +1,4 @@
-package com.unq.mitvu.body.drafts;
+package com.unq.mitvu.controller.drafts;
 
 import com.unq.mitvu.model.Estudiante;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.unq.mitvu.controller;
 
-import com.unq.mitvu.body.EstudianteBody;
+import com.unq.mitvu.controller.body.EstudianteBody;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.service.ComisionService;

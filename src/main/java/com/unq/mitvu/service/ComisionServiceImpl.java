@@ -23,6 +23,14 @@ public class ComisionServiceImpl implements ComisionService {
 
     @Override
     public Comision crear(Comision comision) {
+        if (comision.getNumero() == null) {
+            Integer numeroDeComision = Math.toIntExact(comisionDAO.countComisionsByDepartamentoAndLocalidadAndCarrera(
+                    comision.getDepartamento(),
+                    comision.getLocalidad(),
+                    comision.getCarrera()
+            ));
+            comision.setNumero(numeroDeComision + 1);
+        }
         return comisionDAO.save(comision);
     }
 
@@ -49,13 +57,16 @@ public class ComisionServiceImpl implements ComisionService {
     @Override
     public Comision modificarPorId(String id, Comision comision) {
         Comision comisionRecuperada = comisionDAO.getById(id);
+        // Si lo que llega de comision es null, que no haga nada
+
         comisionRecuperada.setAula(comision.getAula());
         comisionRecuperada.setCarrera(comision.getCarrera());
         comisionRecuperada.setDepartamento(comision.getDepartamento());
         comisionRecuperada.setLocalidad(comision.getLocalidad());
-        comisionRecuperada.setNumero(comision.getNumero());
+        comisionRecuperada.setHorarioInicio(comision.getHorarioInicio());
+        comisionRecuperada.setHorarioFin(comision.getHorarioFin());
         comisionRecuperada.setTurno(comision.getTurno());
-        comisionRecuperada.setTutor(comision.getTutor());
+
         return comisionDAO.save(comisionRecuperada);
     }
 
