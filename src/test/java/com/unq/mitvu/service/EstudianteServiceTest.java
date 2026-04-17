@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class EstudianteServiceTest {
 
     @Autowired
@@ -48,8 +50,8 @@ public class EstudianteServiceTest {
         );
         comisionDAO.save(comision);
 
-        estudiante = new Estudiante("Perez", "Nacho", "12345678", "TPI", comision, 0);
-        Estudiante estudiante2 = new Estudiante("Gomez", "Elian", "87654321", "TPI", comision, 0);
+        estudiante = new Estudiante("Perez", "Nacho", "12345678", "TPI", 1, comision);
+        Estudiante estudiante2 = new Estudiante("Gomez", "Elian", "87654321", "TPI",1, comision);
 
         estudianteService.crear(estudiante);
         estudianteService.crear(estudiante2);
@@ -63,7 +65,7 @@ public class EstudianteServiceTest {
 
     @Test
     public void testCrearEstudiante() {
-        Estudiante nuevoEstudiante = new Estudiante("Lopez", "estudiante 3", "11223344", "TPI", comision, 0);
+        Estudiante nuevoEstudiante = new Estudiante("Lopez", "estudiante 3", "11223344", "TPI", 1, comision);
         Estudiante estudianteGuardado = estudianteService.crear(nuevoEstudiante);
 
         assertNotNull(estudianteGuardado.getId());
@@ -74,8 +76,8 @@ public class EstudianteServiceTest {
     public void testCrearTodosLosEstudiantes() {
         estudianteDAO.deleteAll();
         List<Estudiante> estudiantes = new ArrayList<>();
-        estudiantes.add(new Estudiante("Garcia", "estudiante A", "22334455", "TPI", comision, 0));
-        estudiantes.add(new Estudiante("Martinez", "estudiante B", "33445566", "TPI", comision, 0));
+        estudiantes.add(new Estudiante("Garcia", "estudiante A", "22334455", "TPI", 1, comision));
+        estudiantes.add(new Estudiante("Martinez", "estudiante B", "33445566", "TPI", 1, comision));
 
         estudianteService.crearTodos(estudiantes);
 
@@ -100,7 +102,7 @@ public class EstudianteServiceTest {
 
     @Test
     public void testModificarEstudiantePorId() {
-        Estudiante estudianteModificado = new Estudiante("Gonzalez", "estudiante modificado", "44556677", "TPI", comision, 1);
+        Estudiante estudianteModificado = new Estudiante("Gonzalez", "estudiante modificado", "44556677", "TPI", 1, comision);
         Estudiante estudianteActualizado = estudianteService.modificarPorId(estudiante.getId(), estudianteModificado);
 
         assertEquals(estudiante.getId(), estudianteActualizado.getId());

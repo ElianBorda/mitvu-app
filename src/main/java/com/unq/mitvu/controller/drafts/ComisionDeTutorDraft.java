@@ -1,18 +1,22 @@
-package com.unq.mitvu.body.drafts;
+package com.unq.mitvu.controller.drafts;
 
 import com.unq.mitvu.model.Comision;
+import com.unq.mitvu.model.Estudiante;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.unq.mitvu.body.drafts.TutorDraft.toTutorDraft;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.unq.mitvu.controller.drafts.EstudianteDraft.toEstudianteDraft;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ComisionDeEstudianteDraft {
+public class ComisionDeTutorDraft {
 
     private String id;
     private Integer numero;
@@ -22,14 +26,14 @@ public class ComisionDeEstudianteDraft {
     private String aula;
     private String horarioInicio;
     private String horarioFin;
-    private TutorDraft tutor;
+    private ArrayList<EstudianteDraft> estudiantes;
 
-    static public ComisionDeEstudianteDraft toComisionTutorDraft(Comision comision){
+    static public ComisionDeTutorDraft toComisionEstudianteDraft(Comision comision){
         if (comision == null) {
             return null;
         }
 
-        return new ComisionDeEstudianteDraft(
+        return new ComisionDeTutorDraft(
                 comision.getId(),
                 comision.getNumero(),
                 comision.getLocalidad(),
@@ -38,7 +42,17 @@ public class ComisionDeEstudianteDraft {
                 comision.getAula(),
                 comision.getHorarioInicio().toString(),
                 comision.getHorarioFin().toString(),
-                toTutorDraft(comision.getTutor())
+                toEstudiantesDraft(comision.getEstudiantes())
         );
+    }
+
+    static public ArrayList<EstudianteDraft> toEstudiantesDraft(List<Estudiante> estudiantes) {
+        ArrayList<EstudianteDraft> estudiantesDraft = new ArrayList<>();
+
+        for (Estudiante estudiante : estudiantes) {
+            estudiantesDraft.add(toEstudianteDraft(estudiante));
+        }
+
+        return estudiantesDraft;
     }
 }

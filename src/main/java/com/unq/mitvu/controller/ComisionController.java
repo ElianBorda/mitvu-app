@@ -1,14 +1,15 @@
 package com.unq.mitvu.controller;
 
-import com.unq.mitvu.body.ComisionBody;
+import com.unq.mitvu.controller.body.ComisionBody;
+import com.unq.mitvu.controller.dto.ComisionDTO;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.service.ComisionService;
+import com.unq.mitvu.service.TutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,11 +19,13 @@ public class ComisionController {
 
     @Autowired
     private ComisionService comisionService;
+    @Autowired
+    private TutorService tutorService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ComisionBody> getComisionById(@PathVariable String id) {
+    public ResponseEntity<ComisionDTO> getComisionById(@PathVariable String id) {
         Comision comision = comisionService.obtenerPorId(id);
-        return new ResponseEntity<>(ComisionBody.fromComision(comision), HttpStatus.OK);
+        return new ResponseEntity<>(ComisionDTO.fromComision(comision), HttpStatus.OK);
     }
 
     @GetMapping("/sin-tutor")
@@ -31,28 +34,30 @@ public class ComisionController {
     }
 
     @PostMapping
-    public ResponseEntity<ComisionBody> createComision(@RequestBody ComisionBody body) {
+    public ResponseEntity<ComisionDTO> createComision(@RequestBody ComisionBody body) {
         Comision comision = comisionService.crear(body.toComision());
-        return new ResponseEntity<>(ComisionBody.fromComision(comision), HttpStatus.CREATED);
+        return new ResponseEntity<>(ComisionDTO.fromComision(comision), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ComisionBody> updateComision(@PathVariable String id, @RequestBody ComisionBody body) {
+    public ResponseEntity<ComisionDTO> updateComision(@PathVariable String id, @RequestBody ComisionBody body) {
         Comision comision = comisionService.modificarPorId(id, body.toComision());
-        return new ResponseEntity<>(ComisionBody.fromComision(comision), HttpStatus.OK);
+        return new ResponseEntity<>(ComisionDTO.fromComision(comision), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComision(@PathVariable String id){
+        comisionService.eliminarTutorDeComision(id);
+        comisionService.eliminarTodosLosEstudiantesDeComision(id);
         comisionService.eliminarPorId(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping
-    public ResponseEntity<List<ComisionBody>> getAllComisiones() {
+    public ResponseEntity<List<ComisionDTO>> getAllComisiones() {
         List<Comision> comisiones = comisionService.obtenerTodos();
-        List<ComisionBody> comisionesBody = comisiones.stream().map(
-                ComisionBody::fromComision
+        List<ComisionDTO> comisionesBody = comisiones.stream().map(
+                ComisionDTO::fromComision
         ).toList();
 
         return new ResponseEntity<>(comisionesBody, HttpStatus.OK);

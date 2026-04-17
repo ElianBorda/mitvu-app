@@ -1,20 +1,13 @@
-package com.unq.mitvu.body;
+package com.unq.mitvu.controller.body;
 
-import com.unq.mitvu.body.drafts.ComisionDeTutorDraft;
-import com.unq.mitvu.body.drafts.EstudianteDraft;
 import com.unq.mitvu.model.Comision;
-import com.unq.mitvu.model.Estudiante;
-import com.unq.mitvu.model.Horario;
 import com.unq.mitvu.model.Tutor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static com.unq.mitvu.body.drafts.ComisionDeTutorDraft.toEstudiantesDraft;
 
 
 @Getter
@@ -37,7 +30,7 @@ public class TutorBody {
                 tutor.getNombre(),
                 tutor.getDni(),
                 tutor.getMail(),
-                tutor.getComisiones() != null ? tutor.getComisiones().stream().map(Comision::getId).toList() : null
+                tutor.getComisiones().stream().map(Comision::getId).toList()
         );
     }
 

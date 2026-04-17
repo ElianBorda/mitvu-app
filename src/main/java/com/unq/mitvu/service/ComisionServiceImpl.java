@@ -1,6 +1,8 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.ComisionDAO;
+import com.unq.mitvu.dao.EstudianteDAO;
+import com.unq.mitvu.dao.TutorDAO;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.model.Turno;
@@ -16,13 +18,25 @@ import java.util.List;
 public class ComisionServiceImpl implements ComisionService {
 
     private final ComisionDAO comisionDAO;
+    private final TutorDAO tutorDAO;
+    private final EstudianteDAO estudianteDAO;
 
-    public ComisionServiceImpl(ComisionDAO comisionDAO) {
+    public ComisionServiceImpl(ComisionDAO comisionDAO, TutorDAO tutorDAO, EstudianteDAO estudianteDAO) {
         this.comisionDAO = comisionDAO;
+        this.tutorDAO = tutorDAO;
+        this.estudianteDAO = estudianteDAO;
     }
 
     @Override
     public Comision crear(Comision comision) {
+        if (comision.getNumero() == null) {
+            Integer numeroDeComision = Math.toIntExact(comisionDAO.countComisionsByDepartamentoAndLocalidadAndCarrera(
+                    comision.getDepartamento(),
+                    comision.getLocalidad(),
+                    comision.getCarrera()
+            ));
+            comision.setNumero(numeroDeComision + 1);
+        }
         return comisionDAO.save(comision);
     }
 
@@ -49,13 +63,16 @@ public class ComisionServiceImpl implements ComisionService {
     @Override
     public Comision modificarPorId(String id, Comision comision) {
         Comision comisionRecuperada = comisionDAO.getById(id);
+        // Si lo que llega de comision es null, que no haga nada
+
         comisionRecuperada.setAula(comision.getAula());
         comisionRecuperada.setCarrera(comision.getCarrera());
         comisionRecuperada.setDepartamento(comision.getDepartamento());
         comisionRecuperada.setLocalidad(comision.getLocalidad());
-        comisionRecuperada.setNumero(comision.getNumero());
+        comisionRecuperada.setHorarioInicio(comision.getHorarioInicio());
+        comisionRecuperada.setHorarioFin(comision.getHorarioFin());
         comisionRecuperada.setTurno(comision.getTurno());
-        comisionRecuperada.setTutor(comision.getTutor());
+
         return comisionDAO.save(comisionRecuperada);
     }
 
@@ -66,6 +83,7 @@ public class ComisionServiceImpl implements ComisionService {
 
     @Override
     public void eliminarPorId(String id) {
+
         comisionDAO.deleteById(id);
     }
 
@@ -82,6 +100,30 @@ public class ComisionServiceImpl implements ComisionService {
             comisionDAO.save(comisionDB);
         });
     }
+
+    @Override
+    public void eliminarTutorDeComision(String idComision) {
+        Comision comision = comisionDAO.getById(idComision);
+        if (comision.getTutor() != null) {
+            Tutor tutor = comision.getTutor();
+            tutor.getComisiones().removeIf(c -> c.getId().equals(idComision));
+            tutorDAO.save(tutor);
+            comision.setTutor(null);
+        }
+        comisionDAO.save(comision);
+    }
+
+    @Override
+    public void eliminarTodosLosEstudiantesDeComision(String idComision) {
+        Comision comision = comisionDAO.getById(idComision);
+        comision.getEstudiantes().forEach(estudiante -> {
+            estudiante.setComision(null);
+            estudianteDAO.save(estudiante);
+        });
+        comision.setEstudiantes(new ArrayList<>());
+        comisionDAO.save(comision);
+    }
+
 
     @Override
     public void agregarEstudianteAComision(Estudiante estudianteGuardado, String comision_id) {

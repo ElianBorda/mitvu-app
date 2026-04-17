@@ -1,7 +1,7 @@
-package com.unq.mitvu.body;
+package com.unq.mitvu.controller.dto;
 
-import com.unq.mitvu.body.drafts.EstudianteDraft;
-import com.unq.mitvu.body.drafts.TutorDraft;
+import com.unq.mitvu.controller.drafts.EstudianteDraft;
+import com.unq.mitvu.controller.drafts.TutorDraft;
 import com.unq.mitvu.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,14 +10,14 @@ import lombok.Setter;
 
 import java.util.List;
 
-import static com.unq.mitvu.body.drafts.ComisionDeTutorDraft.toEstudiantesDraft;
-import static com.unq.mitvu.body.drafts.TutorDraft.toTutorDraft;
+import static com.unq.mitvu.controller.drafts.ComisionDeTutorDraft.toEstudiantesDraft;
+import static com.unq.mitvu.controller.drafts.TutorDraft.toTutorDraft;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ComisionBody {
+public class ComisionDTO {
 
     private String id;
     private Integer numero;
@@ -27,12 +27,13 @@ public class ComisionBody {
     private String aula;
     private String horarioInicio;
     private String horarioFin;
+    private String turno;
     private TutorDraft tutor;
     private List<EstudianteDraft> estudiantes;
 
 
-    static public ComisionBody fromComision(Comision comision){
-        return new ComisionBody(
+    static public ComisionDTO fromComision(Comision comision){
+        return new ComisionDTO(
                 comision.getId(),
                 comision.getNumero(),
                 comision.getLocalidad(),
@@ -41,6 +42,7 @@ public class ComisionBody {
                 comision.getAula(),
                 comision.getHorarioInicio().toString(),
                 comision.getHorarioFin().toString(),
+                comision.getTurno().getDescripcionTurno(),
                 toTutorDraft(comision.getTutor()),
                 toEstudiantesDraft(comision.getEstudiantes())
         );

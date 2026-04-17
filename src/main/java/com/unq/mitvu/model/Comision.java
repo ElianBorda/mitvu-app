@@ -73,4 +73,14 @@ public class Comision {
         this.localidad = localidad;
         this.numero = numero;
     }
+
+    public Comision(String localidad, String departamento, String carrera, String aula, Horario horarioInicio, Horario horarioFin) {
+        this.localidad = localidad;
+        this.departamento = departamento;
+        this.carrera = carrera;
+        this.aula = aula;
+        this.horarioInicio = horarioInicio;
+        this.horarioFin = horarioFin;
+        this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
+    }
 }
