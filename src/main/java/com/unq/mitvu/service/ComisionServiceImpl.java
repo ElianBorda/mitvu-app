@@ -1,6 +1,8 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.ComisionDAO;
+import com.unq.mitvu.dao.EstudianteDAO;
+import com.unq.mitvu.dao.TutorDAO;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.model.Turno;
@@ -16,9 +18,13 @@ import java.util.List;
 public class ComisionServiceImpl implements ComisionService {
 
     private final ComisionDAO comisionDAO;
+    private final TutorDAO tutorDAO;
+    private final EstudianteDAO estudianteDAO;
 
-    public ComisionServiceImpl(ComisionDAO comisionDAO) {
+    public ComisionServiceImpl(ComisionDAO comisionDAO, TutorDAO tutorDAO, EstudianteDAO estudianteDAO) {
         this.comisionDAO = comisionDAO;
+        this.tutorDAO = tutorDAO;
+        this.estudianteDAO = estudianteDAO;
     }
 
     @Override
@@ -77,6 +83,7 @@ public class ComisionServiceImpl implements ComisionService {
 
     @Override
     public void eliminarPorId(String id) {
+
         comisionDAO.deleteById(id);
     }
 
@@ -93,6 +100,30 @@ public class ComisionServiceImpl implements ComisionService {
             comisionDAO.save(comisionDB);
         });
     }
+
+    @Override
+    public void eliminarTutorDeComision(String idComision) {
+        Comision comision = comisionDAO.getById(idComision);
+        if (comision.getTutor() != null) {
+            Tutor tutor = comision.getTutor();
+            tutor.getComisiones().removeIf(c -> c.getId().equals(idComision));
+            tutorDAO.save(tutor);
+            comision.setTutor(null);
+        }
+        comisionDAO.save(comision);
+    }
+
+    @Override
+    public void eliminarTodosLosEstudiantesDeComision(String idComision) {
+        Comision comision = comisionDAO.getById(idComision);
+        comision.getEstudiantes().forEach(estudiante -> {
+            estudiante.setComision(null);
+            estudianteDAO.save(estudiante);
+        });
+        comision.setEstudiantes(new ArrayList<>());
+        comisionDAO.save(comision);
+    }
+
 
     @Override
     public void agregarEstudianteAComision(Estudiante estudianteGuardado, String comision_id) {

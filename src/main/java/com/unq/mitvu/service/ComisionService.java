@@ -18,5 +18,7 @@ public interface ComisionService {
     void eliminarPorId(String id);
     void eliminarTodo();
     void agregarTutorAComisiones(Tutor tutor, ArrayList<String> comisiones_ids);
+    void eliminarTutorDeComision(String idComision);
+    void eliminarTodosLosEstudiantesDeComision(String idComision);
     void agregarEstudianteAComision(Estudiante estudianteGuardado, String comision_id);
 }

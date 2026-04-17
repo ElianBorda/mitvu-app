@@ -4,6 +4,7 @@ import com.unq.mitvu.controller.body.ComisionBody;
 import com.unq.mitvu.controller.dto.ComisionDTO;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.service.ComisionService;
+import com.unq.mitvu.service.TutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ public class ComisionController {
 
     @Autowired
     private ComisionService comisionService;
+    @Autowired
+    private TutorService tutorService;
 
     @GetMapping("/{id}")
     public ResponseEntity<ComisionDTO> getComisionById(@PathVariable String id) {
@@ -44,6 +47,8 @@ public class ComisionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComision(@PathVariable String id){
+        comisionService.eliminarTutorDeComision(id);
+        comisionService.eliminarTodosLosEstudiantesDeComision(id);
         comisionService.eliminarPorId(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
