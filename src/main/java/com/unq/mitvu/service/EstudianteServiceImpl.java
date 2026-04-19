@@ -1,54 +1,69 @@
 package com.unq.mitvu.service;
 
+import com.unq.mitvu.dao.ComisionDAO;
 import com.unq.mitvu.dao.EstudianteDAO;
+import com.unq.mitvu.dao.TutorDAO;
+import com.unq.mitvu.exceptions.RecursoNoEncontradoException;
+import com.unq.mitvu.exceptions.ReglaDeNegocioException;
+import com.unq.mitvu.mapper.EstudianteMapper;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
+import com.unq.mitvu.model.Rol;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class EstudianteServiceImpl implements EstudianteService {
 
-    private EstudianteDAO estudianteDAO;
+    private final EstudianteDAO estudianteDAO;
+    private final ComisionDAO comisionDAO;
+    private final TutorDAO tutorDAO;
 
-    public EstudianteServiceImpl(EstudianteDAO estudianteDAO) {
+    @Autowired
+    private EstudianteMapper estudianteMapper;
+
+    public EstudianteServiceImpl(EstudianteDAO estudianteDAO, ComisionDAO comisionDAO, TutorDAO tutorDAO) {
         this.estudianteDAO = estudianteDAO;
+        this.comisionDAO = comisionDAO;
+        this.tutorDAO = tutorDAO;
     }
 
+    @Override
     public Estudiante crear(Estudiante estudiante) {
-        return  estudianteDAO.save(estudiante);
+        estudiante.setRol(Rol.ESTUDIANTE);
+        return estudianteDAO.save(estudiante);
     }
 
     @Override
     public void crearTodos(List<Estudiante> estudiantes) {
+        estudiantes.forEach(estudiante -> estudiante.setRol(Rol.ESTUDIANTE));
         estudianteDAO.saveAll(estudiantes);
     }
 
     @Override
     public Estudiante obtenerPorId(String id) {
-        return estudianteDAO.getById(id);
+        return estudianteDAO.findById(id).orElseThrow(() ->
+                new RecursoNoEncontradoException(id, "No se encontró el ESTUDIANTE con id: " + id));
     }
 
     @Override
-    public List<Estudiante> obtenerTodos() { return estudianteDAO.findAll(); }
+    public List<Estudiante> obtenerTodos() {
+        return estudianteDAO.findAll();
+    }
 
     @Override
     public Estudiante modificarPorId(String id, Estudiante estudiante) {
-        Estudiante estudianteOg = estudianteDAO.getById(id);
-
-        estudianteOg.setNombre(estudiante.getNombre());
-        estudianteOg.setApellido(estudiante.getApellido());
-        estudianteOg.setDni(estudiante.getDni());
-        estudiante.setCarrera(estudiante.getCarrera());
-        estudianteOg.setCantidadAsistencias(estudiante.getCantidadAsistencias());
-        estudianteOg.setComision(estudiante.getComision());
-
-        return estudianteDAO.save(estudianteOg);
+        Estudiante estudianteExistente = this.obtenerPorId(id);
+        estudianteMapper.actualizarEstudiante(estudiante, estudianteExistente);
+        return estudianteDAO.save(estudianteExistente);
     }
 
     @Override
     public void eliminarPorId(String id) {
+        this.obtenerPorId(id);
         estudianteDAO.deleteById(id);
     }
 
@@ -58,8 +73,83 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
-    public void asignarEstudianteAComision(Estudiante estudiante, Comision comision) {
-        estudiante.setComision(comision);
-        estudianteDAO.save(estudiante);
+    public Estudiante agregarEstudianteAComision(String idEstudiante, String idComision) {
+        Estudiante estudiante = this.obtenerPorId(idEstudiante);
+        Comision comision = comisionDAO.findById(idComision).orElseThrow(() ->
+                new RecursoNoEncontradoException(idComision, "No se encontró la COMISION con id: " + idComision));
+
+        if (estudiante.getComision() == null || estudiante.getComision().getId() == null){
+            estudiante.setComision(comision);
+            return estudianteDAO.save(estudiante);
+        } else {
+            throw new ReglaDeNegocioException("El ESTUDIANTE con id: " + idEstudiante + " ya se encuentra en la COMISION con id: " + estudiante.getComision().getId() + ".");
+        }
+    }
+
+    @Override
+    public Estudiante eliminarComisionDeEstudiante(String idEstudiante) {
+        Estudiante estudiante = this.obtenerPorId(idEstudiante);
+        if (estudiante.getComision() != null){
+            estudiante.setComision(null);
+            return estudianteDAO.save(estudiante);
+        } else {
+            throw new ReglaDeNegocioException("El ESTUDIANTE con id: " + idEstudiante + " no se encuentra en ninguna COMISION.");
+        }
+    }
+
+    @Override
+    public List<Estudiante> obtenerEstudiantesDeComision(String idComision) {
+        if (!comisionDAO.existsById(idComision)) {
+            throw new RecursoNoEncontradoException(idComision, "No se encontró la COMISION con id: " + idComision);
+        }
+        return estudianteDAO.findByComisionId(idComision);
+    }
+
+    @Override
+    public List<Estudiante> eliminarLaComisionDeTodosLosEstudiantes(String idComision) {
+        List<Estudiante> estudiantes = this.obtenerEstudiantesDeComision(idComision);
+        estudiantes.forEach(estudiante -> this.eliminarComisionDeEstudiante(estudiante.getId()));
+        return estudiantes;
+    }
+
+    @Override
+    public List<Estudiante> eliminarTodasLasComisionesDeTodosLosEstudiantes() {
+        return this.obtenerTodos().stream().map(estudiante -> this.eliminarComisionDeEstudiante(estudiante.getId())).toList();
+    }
+
+    @Override
+    public Estudiante cambiarEstudianteDeComision(String idEstudiante, String idComision) {
+        Estudiante estudiante = this.obtenerPorId(idEstudiante);
+        Comision comision = comisionDAO.findById(idComision).orElseThrow(() ->
+                new RecursoNoEncontradoException(idComision, "No se encontró la COMISION con id: " + idComision));
+
+        if (estudiante.getComision() != null){
+            estudiante.setComision(comision);
+            return estudianteDAO.save(estudiante);
+        } else {
+            throw new ReglaDeNegocioException("El ESTUDIANTE con id: " + idEstudiante + " no se encuentra en ninguna COMISION.");
+        }
+    }
+
+    @Override
+    public List<Estudiante> cambiarEstudiantesAComision(List<String> idsEstudiantes, String idComision) {
+        return idsEstudiantes.stream().map(id -> this.cambiarEstudianteDeComision(id, idComision)).toList();
+    }
+
+    @Override
+    public List<Estudiante> obtenerTodosLosEstudiantesDeTutor(String idTutor) {
+        if (!tutorDAO.existsById(idTutor)) {
+            throw new RecursoNoEncontradoException(idTutor, "No se encontró el TUTOR con id: " + idTutor);
+        }
+        List<Comision> comisionesDelTutor = comisionDAO.findByTutorId(idTutor);
+        if (comisionesDelTutor.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return estudianteDAO.findByComisionIn(comisionesDelTutor);
+    }
+
+    @Override
+    public void darseDeBaja(String idEstudiante) {
+        // Implementación pendiente
     }
 }
