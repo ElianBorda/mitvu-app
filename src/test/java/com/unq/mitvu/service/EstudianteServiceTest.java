@@ -2,10 +2,10 @@ package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.ComisionDAO;
 import com.unq.mitvu.dao.EstudianteDAO;
-import com.unq.mitvu.model.Comision;
-import com.unq.mitvu.model.Estudiante;
-import com.unq.mitvu.model.Horario;
-import com.unq.mitvu.model.Tutor;
+import com.unq.mitvu.dao.TutorDAO;
+import com.unq.mitvu.exceptions.RecursoNoEncontradoException;
+import com.unq.mitvu.exceptions.ReglaDeNegocioException;
+import com.unq.mitvu.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,96 +31,137 @@ public class EstudianteServiceTest {
     @Autowired
     private ComisionDAO comisionDAO;
 
-    private Estudiante estudiante;
-    private Comision comision;
+    @Autowired
+    private TutorDAO tutorDAO;
+
+    private Estudiante estudiantePrueba;
+    private Comision comisionPrueba;
+    private Tutor tutorPrueba;
+
 
     @BeforeEach
-    public void setUp() {
-        Horario horarioInicio = new Horario(8, 0);
-        Horario horarioFin = new Horario(11, 0);
-        comision = new Comision(
-                new Tutor(),
-                horarioFin,
-                horarioInicio,
-                "37B",
-                "Lic. en Informática",
-                "CyT",
-                "Bernal",
-                1
+    void setUp() {
+        // 1. Limpieza de la base de datos
+        estudianteDAO.deleteAll();
+        comisionDAO.deleteAll();
+        tutorDAO.deleteAll();
+
+        // 2. Creación de Tutor
+        tutorPrueba = new Tutor("Gomez", "Ana", "11223344", "ana@unq.edu.ar", "pass");
+        tutorPrueba = tutorDAO.save(tutorPrueba);
+
+        // 3. Creación de Comisión (y le asignamos el tutor)
+        comisionPrueba = new Comision(
+                "Bernal", "Quilmes", "Programación", "Aula 5",
+                new Horario(8, 0), new Horario(9, 0), DiaHabil.MIERCOLES
         );
-        comisionDAO.save(comision);
 
-        estudiante = new Estudiante("Perez", "Nacho", "12345678", "TPI", 1, comision);
-        Estudiante estudiante2 = new Estudiante("Gomez", "Elian", "87654321", "TPI",1, comision);
+        comisionPrueba.setTutor(tutorPrueba);
+        comisionPrueba = comisionDAO.save(comisionPrueba);
 
-        estudianteService.crear(estudiante);
-        estudianteService.crear(estudiante2);
+
+        // 4. Creación de Estudiante (Sin comisión asignada inicialmente)
+        estudiantePrueba = new Estudiante();
+        // Suponiendo que tienes estos setters, si no, usa el constructor correspondiente
+        estudiantePrueba.setNombre("Luciano");
+        estudiantePrueba.setApellido("Perez");
+        estudiantePrueba.setDni("40111222");
+        estudiantePrueba.setCarrera("TPI");
+
+        estudiantePrueba = estudianteDAO.save(estudiantePrueba);
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         estudianteDAO.deleteAll();
         comisionDAO.deleteAll();
+        tutorDAO.deleteAll();
     }
 
     @Test
-    public void testCrearEstudiante() {
-        Estudiante nuevoEstudiante = new Estudiante("Lopez", "estudiante 3", "11223344", "TPI", 1, comision);
-        Estudiante estudianteGuardado = estudianteService.crear(nuevoEstudiante);
+    void crear_GuardaElEstudianteYGeneraId() {
+        Estudiante nuevoEstudiante = new Estudiante();
+        nuevoEstudiante.setNombre("Maria");
+        nuevoEstudiante.setDni("41000000");
 
-        assertNotNull(estudianteGuardado.getId());
-        assertEquals("estudiante 3", estudianteGuardado.getNombre());
+        Estudiante resultado = estudianteService.crear(nuevoEstudiante);
+
+        assertNotNull(resultado.getId());
+        assertEquals("Maria", resultado.getNombre());
+        assertTrue(estudianteDAO.existsById(resultado.getId()));
     }
 
     @Test
-    public void testCrearTodosLosEstudiantes() {
-        estudianteDAO.deleteAll();
-        List<Estudiante> estudiantes = new ArrayList<>();
-        estudiantes.add(new Estudiante("Garcia", "estudiante A", "22334455", "TPI", 1, comision));
-        estudiantes.add(new Estudiante("Martinez", "estudiante B", "33445566", "TPI", 1, comision));
-
-        estudianteService.crearTodos(estudiantes);
-
-        assertEquals(2, estudianteDAO.count());
+    void obtenerPorId_SiNoExiste_LanzaRecursoNoEncontradoException() {
+        assertThrows(RecursoNoEncontradoException.class, () -> {
+            estudianteService.obtenerPorId("ID-FALSO");
+        });
     }
 
     @Test
-    public void testObtenerEstudiantePorId() {
-        Estudiante estudianteEncontrado = estudianteService.obtenerPorId(estudiante.getId());
+    void agregarEstudianteAComision_AsignaCorrectamente() {
+        String idEstudiante = estudiantePrueba.getId();
+        String idComision = comisionPrueba.getId();
 
-        assertNotNull(estudianteEncontrado);
-        assertEquals(estudiante.getId(), estudianteEncontrado.getId());
-        assertEquals("Nacho", estudianteEncontrado.getNombre());
+        Estudiante resultado = estudianteService.agregarEstudianteAComision(idEstudiante, idComision);
+
+        assertNotNull(resultado.getComision());
+        assertEquals(idComision, resultado.getComision().getId());
+
+        Estudiante estudianteEnBD = estudianteDAO.findById(idEstudiante).get();
+        assertEquals(idComision, estudianteEnBD.getComision().getId());
     }
 
     @Test
-    public void testObtenerTodosLosEstudiantes() {
-        List<Estudiante> estudiantes = estudianteService.obtenerTodos();
-        assertEquals(2, estudiantes.size());
-        assertEquals(estudiantes.get(0).getNombre(), estudiante.getNombre());
+    void agregarEstudianteAComision_SiYaTieneComision_LanzaReglaDeNegocioException() {
+        estudiantePrueba.setComision(comisionPrueba);
+        estudianteDAO.save(estudiantePrueba);
+
+        String idEstudiante = estudiantePrueba.getId();
+        String idComision = comisionPrueba.getId();
+
+        ReglaDeNegocioException excepcion = assertThrows(ReglaDeNegocioException.class, () -> {
+            estudianteService.agregarEstudianteAComision(idEstudiante, idComision);
+        });
+
+        assertTrue(excepcion.getMessage().contains("ya se encuentra en la COMISION"));
     }
 
     @Test
-    public void testModificarEstudiantePorId() {
-        Estudiante estudianteModificado = new Estudiante("Gonzalez", "estudiante modificado", "44556677", "TPI", 1, comision);
-        Estudiante estudianteActualizado = estudianteService.modificarPorId(estudiante.getId(), estudianteModificado);
+    void cambiarEstudianteDeComision_ActualizaLaComisionDelAlumno() {
+        estudiantePrueba.setComision(comisionPrueba);
+        estudianteDAO.save(estudiantePrueba);
 
-        assertEquals(estudiante.getId(), estudianteActualizado.getId());
-        assertEquals("estudiante modificado", estudianteActualizado.getNombre());
-        assertEquals("Gonzalez", estudianteActualizado.getApellido());
-        assertEquals("44556677", estudianteActualizado.getDni());
-        assertEquals(1, estudianteActualizado.getCantidadAsistencias());
+        Comision nuevaComision = new Comision("Wilde", "Avellaneda", "Redes", "Aula 2", new Horario(8,0), new Horario(9,0), DiaHabil.JUEVES);
+        nuevaComision = comisionDAO.save(nuevaComision);
+
+        Estudiante resultado = estudianteService.cambiarEstudianteDeComision(estudiantePrueba.getId(), nuevaComision.getId());
+
+        assertEquals(nuevaComision.getId(), resultado.getComision().getId());
     }
 
     @Test
-    public void testEliminarEstudiantePorId() {
-        estudianteService.eliminarPorId(estudiante.getId());
-        assertNull(estudianteDAO.findById(estudiante.getId()).orElse(null));
+    void eliminarComisionDeEstudiante_DejaAlEstudianteSinAsignar() {
+        estudiantePrueba.setComision(comisionPrueba);
+        estudianteDAO.save(estudiantePrueba);
+
+        Estudiante resultado = estudianteService.eliminarComisionDeEstudiante(estudiantePrueba.getId());
+
+        assertNull(resultado.getComision());
     }
 
     @Test
-    public void testEliminarTodosLosEstudiantes() {
-        estudianteService.eliminarTodo();
-        assertEquals(0, estudianteDAO.count());
+    void obtenerTodosLosEstudiantesDeTutor_RetornaListaCorrecta() {
+        estudiantePrueba.setComision(comisionPrueba);
+        estudianteDAO.save(estudiantePrueba);
+
+        Estudiante estudianteSuelto = new Estudiante();
+        estudianteDAO.save(estudianteSuelto);
+
+        List<Estudiante> estudiantesDelTutor = estudianteService.obtenerTodosLosEstudiantesDeTutor(tutorPrueba.getId());
+
+        assertEquals(1, estudiantesDelTutor.size());
+        assertEquals(estudiantePrueba.getId(), estudiantesDelTutor.get(0).getId());
     }
 }
+

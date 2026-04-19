@@ -1,8 +1,9 @@
 package com.unq.mitvu.service;
 
+import com.unq.mitvu.dao.ComisionDAO;
 import com.unq.mitvu.dao.TutorDAO;
-import com.unq.mitvu.model.Estudiante;
-import com.unq.mitvu.model.Tutor;
+import com.unq.mitvu.exceptions.RecursoNoEncontradoException;
+import com.unq.mitvu.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,87 +20,111 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 public class TutorServiceTest {
+    @Autowired
+    private TutorService tutorService;
 
     @Autowired
-    public TutorService tutorService;
+    private TutorDAO tutorDAO;
 
     @Autowired
-    public TutorDAO tutorDAO;
+    private ComisionDAO comisionDAO;
 
-    private Tutor tutor;
+    private Tutor tutorPrueba;
+    private Comision comisionPrueba;
 
     @BeforeEach
-    public void setUp() {
-        tutor = new Tutor("Juan");
-        Tutor tutor2 =  new Tutor("Domingo");
+    void setUp() {
+        comisionDAO.deleteAll();
+        tutorDAO.deleteAll();
 
-        tutorService.crear(tutor);
-        tutorService.crear(tutor2);
+        tutorPrueba = new Tutor("Gomez", "Ana", "11223344", "ana@unq.edu.ar", "pass");
+        tutorPrueba = tutorDAO.save(tutorPrueba);
+
+        comisionPrueba = new Comision(
+                "Bernal", "Quilmes", "Programación", "Aula 1",
+                new Horario(8, 0), new Horario(8,0), DiaHabil.LUNES
+        );
+        comisionPrueba.setTutor(tutorPrueba);
+        comisionPrueba = comisionDAO.save(comisionPrueba);
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
+        comisionDAO.deleteAll();
         tutorDAO.deleteAll();
     }
 
     @Test
-    public void crearTutor() {
-        Tutor tutor = new Tutor("Tutor N");
-        Tutor tutorGuardado = tutorService.crear(tutor);
+    void crear_GuardaElTutorYGeneraId() {
+        Tutor nuevoTutor = new Tutor("Perez", "Juan", "40111222", "juan@unq.edu.ar");
 
-        assertNotNull(tutorGuardado.getId());
-        assertEquals(tutor.getNombre(), tutorGuardado.getNombre());
+        Tutor resultado = tutorService.crear(nuevoTutor);
+
+        assertNotNull(resultado.getId());
+        assertEquals("Juan", resultado.getNombre());
+        assertTrue(tutorDAO.existsById(resultado.getId()));
     }
 
     @Test
-    public void testCrearTodosLosTutores() {
-        tutorDAO.deleteAll();
-        List<Tutor> tutores = new ArrayList<>();
-        tutores.add(new Tutor("tutor A"));
-        tutores.add(new Tutor("tutor B"));
+    void obtenerPorId_SiExiste_RetornaElTutor() {
+        String idTutor = tutorPrueba.getId();
 
-        tutorService.crearTodos(tutores);
+        Tutor resultado = tutorService.obtenerPorId(idTutor);
 
-        assertEquals(2, tutorDAO.count());
+        assertNotNull(resultado);
+        assertEquals("Ana", resultado.getNombre());
+        assertEquals("11223344", resultado.getDni());
     }
 
     @Test
-    public void testObtenerTutorPorId() {
-        Tutor tutorEncontrado = tutorService.obtenerPorId(tutor.getId());
-
-        assertNotNull(tutorEncontrado);
-        assertEquals(tutor.getId(), tutorEncontrado.getId());
-        assertEquals("Juan", tutorEncontrado.getNombre());
+    void obtenerPorId_SiNoExiste_LanzaRecursoNoEncontradoException() {
+        assertThrows(RecursoNoEncontradoException.class, () -> {
+            tutorService.obtenerPorId("ID-FALSO-TUTOR");
+        });
     }
 
     @Test
-    public void testObtenerTodosLosTutores() {
+    void modificarPorId_ActualizaLosDatosCorrectamente() {
+        Tutor datosNuevos = new Tutor("Gomez-Perez", "Ana", "11223344", "ana.nueva@unq.edu.ar");
+        String idTutor = tutorPrueba.getId();
+        Tutor resultado = tutorService.modificarPorId(idTutor, datosNuevos);
+
+        assertEquals("Gomez-Perez", resultado.getApellido());
+        assertEquals("ana.nueva@unq.edu.ar", resultado.getMail());
+
+        Tutor tutorEnBD = tutorDAO.findById(idTutor).get();
+        assertEquals("Gomez-Perez", tutorEnBD.getApellido());
+    }
+
+    @Test
+    void eliminarPorId_DesvinculaSusComisionesYBorraElTutor() {
+        String idTutor = tutorPrueba.getId();
+        String idComision = comisionPrueba.getId();
+
+        Comision comisionAntes = comisionDAO.findById(idComision).get();
+        assertNotNull(comisionAntes.getTutor());
+        assertEquals(idTutor, comisionAntes.getTutor().getId());
+
+        tutorService.eliminarPorId(idTutor);
+
+        assertFalse(tutorDAO.existsById(idTutor));
+
+        assertTrue(comisionDAO.existsById(idComision));
+
+        Comision comisionDespues = comisionDAO.findById(idComision).get();
+        assertTrue(
+                comisionDespues.getTutor() == null || comisionDespues.getTutor().getId() == null,
+                "El tutor debería haber sido removido (debe ser null o un proxy vacío)"
+        );
+    }
+
+    @Test
+    void obtenerTodos_RetornaTodosLosTutores() {
+        Tutor otroTutor = new Tutor("Martinez", "Carlos", "33445566", "carlos@unq.edu.ar");
+        tutorDAO.save(otroTutor);
+
         List<Tutor> tutores = tutorService.obtenerTodos();
+
         assertEquals(2, tutores.size());
-        assertEquals(tutores.get(0).getNombre(), tutor.getNombre());
     }
-
-    @Test
-    public void testModificarTutorPorId() {
-        Tutor tutorModificado = new Tutor("tutor modificado");
-        Tutor tutorActualizado = tutorService.modificarPorId(tutor.getId(), tutorModificado);
-
-        assertEquals(tutor.getId(), tutorActualizado.getId());
-        assertEquals("tutor modificado", tutorActualizado.getNombre());
-    }
-
-    @Test
-    public void testEliminarTutorPorId() {
-        tutorService.eliminarPorId(tutor.getId());
-        assertNull(tutorDAO.findById(tutor.getId()).orElse(null));
-    }
-
-    @Test
-    public void testEliminarTodosLostutors() {
-        tutorService.eliminarTodo();
-        assertEquals(0, tutorDAO.count());
-    }
-
-
-
 }

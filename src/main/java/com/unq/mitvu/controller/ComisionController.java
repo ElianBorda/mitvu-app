@@ -1,15 +1,27 @@
 package com.unq.mitvu.controller;
 
-import com.unq.mitvu.controller.body.ComisionBody;
-import com.unq.mitvu.controller.dto.ComisionDTO;
+import com.unq.mitvu.controller.body.ComisionBodyDTO;
+import com.unq.mitvu.controller.body.IDsBodyDTO;
+import com.unq.mitvu.controller.dto.detalle.ComisionDetalleDTO;
+import com.unq.mitvu.controller.dto.resumen.ComisionResumenDTO;
+import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
+import com.unq.mitvu.controller.dto.resumen.TutorResumenDTO;
+import com.unq.mitvu.mapper.ComisionMapper;
+import com.unq.mitvu.mapper.EstudianteMapper;
+import com.unq.mitvu.mapper.TutorMapper;
 import com.unq.mitvu.model.Comision;
+import com.unq.mitvu.model.Estudiante;
+import com.unq.mitvu.model.Tutor;
 import com.unq.mitvu.service.ComisionService;
+import com.unq.mitvu.service.EstudianteService;
 import com.unq.mitvu.service.TutorService;
+import jakarta.validation.Valid;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -17,56 +29,81 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ComisionController {
 
-    @Autowired
-    private ComisionService comisionService;
-    @Autowired
-    private TutorService tutorService;
+    @Autowired private TutorService tutorService;
+    @Autowired private ComisionService comisionService;
+    @Autowired private EstudianteService estudianteService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ComisionDTO> getComisionById(@PathVariable String id) {
-        Comision comision = comisionService.obtenerPorId(id);
-        return new ResponseEntity<>(ComisionDTO.fromComision(comision), HttpStatus.OK);
+    @Autowired private TutorMapper tutorMapper;
+    @Autowired private ComisionMapper comisionMapper;
+    @Autowired private EstudianteMapper estudianteMapper;
+
+    @GetMapping
+    public ResponseEntity<List<ComisionResumenDTO>> obtenerComisiones(){
+        return ResponseEntity.ok(comisionMapper.aListaDeComisionResumenDTO(comisionService.obtenerTodos()));
     }
 
-    @GetMapping("/sin-tutor")
-    public List<Comision> getComisionesSinTutor() {
-        return comisionService.obtenerSinTutor();
+    @GetMapping("/{id}")
+    public ResponseEntity<ComisionDetalleDTO> obtenerComision(@PathVariable String id){
+        Comision comision = comisionService.obtenerPorId(id);
+        return getComisionDetalleDTOResponseEntity(comision);
     }
 
     @PostMapping
-    public ResponseEntity<ComisionDTO> createComision(@RequestBody ComisionBody body) {
-        Comision comision = comisionService.crear(body.toComision());
-        return new ResponseEntity<>(ComisionDTO.fromComision(comision), HttpStatus.CREATED);
+    public ResponseEntity<ComisionResumenDTO> crearComision(@Valid @RequestBody ComisionBodyDTO comisionBodyDTO) {
+        Comision nuevaComision = comisionMapper.aComision(comisionBodyDTO);
+        Comision comisionGuardada = comisionService.crear(nuevaComision);
+        ComisionResumenDTO response = comisionMapper.aComisionResumenDTO(comisionGuardada);
+        return ResponseEntity.created(URI.create("/api/comisiones/" + response.getId())).body(response);
+    }
+
+    @DeleteMapping({"/{id}"})
+    public ResponseEntity<Void> eliminarComision(@PathVariable String id) {
+        comisionService.eliminarPorId(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ComisionDTO> updateComision(@PathVariable String id, @RequestBody ComisionBody body) {
-        Comision comision = comisionService.modificarPorId(id, body.toComision());
-        return new ResponseEntity<>(ComisionDTO.fromComision(comision), HttpStatus.OK);
+    public ResponseEntity<ComisionDetalleDTO> acutualizarComision(@Valid @RequestBody ComisionBodyDTO comisionBodyDTO, @PathVariable String id) {
+        Comision comision = comisionService.modificarPorId(id, comisionMapper.aComision(comisionBodyDTO));
+        return getComisionDetalleDTOResponseEntity(comision);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComision(@PathVariable String id){
-        comisionService.eliminarTutorDeComision(id);
-        comisionService.eliminarTodosLosEstudiantesDeComision(id);
-        comisionService.eliminarPorId(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PutMapping({"/agregarTutor/{idTutor}/{idComision}"})
+    public ResponseEntity<ComisionDetalleDTO> agregarTutorAComision(@PathVariable String idTutor, @PathVariable String idComision) {
+        Comision comision = comisionService.agregarTutorAComision(idTutor, idComision);
+        return getComisionDetalleDTOResponseEntity(comision);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ComisionDTO>> getAllComisiones() {
-        List<Comision> comisiones = comisionService.obtenerTodos();
-        List<ComisionDTO> comisionesBody = comisiones.stream().map(
-                ComisionDTO::fromComision
-        ).toList();
-
-        return new ResponseEntity<>(comisionesBody, HttpStatus.OK);
+    @PutMapping({"/cambiarTutor/{idTutor}/{idComision}"})
+    public ResponseEntity<ComisionDetalleDTO> cambiarDeTutorEnComision(@PathVariable String idTutor, @PathVariable String idComision) {
+        Comision comision = comisionService.cambiarDeTutorEnComision(idTutor, idComision);
+        return getComisionDetalleDTOResponseEntity(comision);
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteAllComisiones() {
-        comisionService.eliminarTodo();
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @GetMapping({"/tutor/{idTutor}"})
+    public ResponseEntity<List<ComisionResumenDTO>> obtenerComisionesDeTutor(@PathVariable String idTutor) {
+        List<Comision> comisiones = comisionService.obtenerComisionesDeTutor(idTutor);
+        return ResponseEntity.ok(comisionMapper.aListaDeComisionResumenDTO(comisiones));
+    }
+
+    @GetMapping({"/sinTutor"})
+    public ResponseEntity<List<ComisionResumenDTO>> obtenerComisionesSinTutor() {
+        List<Comision> comisiones = comisionService.obtenerComisionesSinTutor();
+        return ResponseEntity.ok(comisionMapper.aListaDeComisionResumenDTO(comisiones));
+    }
+
+    @NonNull
+    private ResponseEntity<ComisionDetalleDTO> getComisionDetalleDTOResponseEntity(Comision comision) {
+        ComisionDetalleDTO comisionDetalle = comisionMapper.aComisionDetalleDTO(comision);
+        if (comision.getTutor() != null && comision.getTutor().getId() != null) {
+            Tutor tutor = tutorService.obtenerPorId(comision.getTutor().getId());
+            TutorResumenDTO tutorDTO = tutorMapper.aTutorResumenDTO(tutor);
+            comisionDetalle.setTutor(tutorDTO);
+        }
+        List<Estudiante> estudiantes = estudianteService.obtenerEstudiantesDeComision(comision.getId());
+        List<EstudianteResumenDTO> estudiantesDTO = estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes);
+        comisionDetalle.setEstudiantes(estudiantesDTO);
+        return ResponseEntity.ok(comisionDetalle);
     }
 
 

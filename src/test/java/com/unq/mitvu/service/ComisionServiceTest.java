@@ -1,18 +1,15 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.ComisionDAO;
-import com.unq.mitvu.model.Comision;
-import com.unq.mitvu.model.Horario;
-import com.unq.mitvu.model.Tutor;
-import com.unq.mitvu.model.Turno;
+import com.unq.mitvu.exceptions.RecursoNoEncontradoException;
+import com.unq.mitvu.exceptions.ReglaDeNegocioException;
+import com.unq.mitvu.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,105 +23,111 @@ public class ComisionServiceTest {
     @Autowired
     private ComisionDAO comisionDAO;
 
-    @Autowired TutorService tutorService;
+    @Autowired
+    private TutorService tutorService;
 
-    private Comision comision;
-    private Tutor tutor;
-    private Horario horarioInicio;
-    private Horario horarioFin;
+    @Autowired
+    private EstudianteService estudianteService;
 
+    private Comision comisionPrueba;
+    private Tutor tutorPrueba;
 
     @BeforeEach
-    public void setUp() {
-        tutor = tutorService.crear(
-                new Tutor(
-                "Borda",
-                "Elian",
-                "44862090",
-                    "elian@gmail.com"
-        ));
+    void setUp() {
+        comisionService.eliminarTodo();
+        Horario horarioInicio = new Horario(8, 0);
+        Horario horarioFin = new Horario(9, 0);
 
-        horarioInicio = new Horario(8, 0);
-        horarioFin = new Horario(11, 0);
-        comision = new Comision(
-                tutor,
-                horarioFin,
-                horarioInicio,
-                "37B",
-                "Lic. en Informática",
-                "CyT",
-                "Bernal",
-                1
+        comisionPrueba = new Comision(
+                "Bernal", "Quilmes", "Programación", "Aula 1",
+                horarioInicio, horarioFin, DiaHabil.LUNES
         );
+
+        tutorPrueba = new Tutor("Gomez", "Juan", "12345678", "juan@unq.edu.ar", "password123");
+
+        tutorPrueba = tutorService.crear(tutorPrueba);
+        comisionPrueba = comisionDAO.save(comisionPrueba);
     }
 
     @AfterEach
-    public void tearDown() {
-        comisionDAO.deleteAll();
+    void tearDown() {
+        comisionService.eliminarTodo();
         tutorService.eliminarTodo();
+        estudianteService.eliminarTodo();
     }
 
     @Test
-    public void testCrearComision() {
-        Comision comisionGuardada = comisionService.crear(comision);
-        assertNotNull(comisionGuardada);
-        assertEquals(1, comisionGuardada.getNumero());
-        assertEquals(Turno.MANANA, comisionGuardada.getTurno());
-        assertEquals(tutor.getId(), comisionGuardada.getTutor().getId());
-        assertEquals(horarioInicio.toString(), comisionGuardada.getHorarioInicio().toString());
-        assertEquals(horarioFin.toString(), comisionGuardada.getHorarioFin().toString());
-        assertEquals("37B", comisionGuardada.getAula());
-        assertEquals("Lic. en Informática", comisionGuardada.getCarrera());
-        assertEquals("Bernal", comisionGuardada.getLocalidad());
-        assertEquals("CyT", comisionGuardada.getDepartamento());
-        assertNotNull(comisionGuardada.getId());
-    }
-
-    @Test void testObtenerPorId() {
-        Comision comisionGuardada = comisionService.crear(comision);
-        Comision comisionObtenida = comisionService.obtenerPorId(comisionGuardada.getId());
-        assertNotNull(comisionObtenida);
-        assertEquals(1, comisionObtenida.getNumero());
-        assertEquals(Turno.MANANA, comisionObtenida.getTurno());
-        assertEquals(tutor.getId(), comisionObtenida.getTutor().getId());
-        assertEquals(horarioInicio.toString(), comisionObtenida.getHorarioInicio().toString());
-        assertEquals(horarioFin.toString(), comisionObtenida.getHorarioFin().toString());
-        assertEquals("37B", comisionObtenida.getAula());
-        assertEquals("Lic. en Informática", comisionObtenida.getCarrera());
-        assertEquals("Bernal", comisionObtenida.getLocalidad());
-        assertEquals("CyT", comisionObtenida.getDepartamento());
-        assertNotNull(comisionObtenida.getId());
-    }
-
-    @Test void testModificarPorId() {
-        Comision comisionGuardada = comisionService.crear(comision);
-        Comision comisionModificada = new Comision(
-                tutor,
-                horarioFin,
-                horarioInicio,
-                "37B",
-                "Lic. en Informática",
-                "CyT",
-                "Bernal",
-                2
+    void crear_AsignaNumeroCorrectoYGuardaEnBD() {
+        Comision nuevaComision = new Comision(
+                "Bernal", "Quilmes", "Programación", "Aula 2",
+                new Horario(10, 0), new Horario(11, 0), DiaHabil.MARTES
         );
-        comisionModificada = comisionService.modificarPorId(comisionGuardada.getId(), comisionModificada);
-        assertNotNull(comisionModificada);
-        assertEquals(Turno.MANANA, comisionModificada.getTurno());
-        assertEquals(horarioInicio.toString(), comisionModificada.getHorarioInicio().toString());
-        assertEquals(horarioFin.toString(), comisionModificada.getHorarioFin().toString());
-        assertEquals("37B", comisionModificada.getAula());
-        assertEquals("Lic. en Informática", comisionModificada.getCarrera());
-        assertEquals("Bernal", comisionModificada.getLocalidad());
-        assertEquals("CyT", comisionModificada.getDepartamento());
-        assertNotNull(comisionModificada.getId());
+
+        Comision resultado = comisionService.crear(nuevaComision);
+
+        assertNotNull(resultado.getId());
+        assertEquals(1, resultado.getNumero());
+        assertEquals(2, comisionDAO.count());
     }
 
     @Test
-    public void testEliminarPorId() {
-        Comision comisionGuardada = comisionService.crear(comision);
-        comisionService.eliminarPorId(comisionGuardada.getId());
-        Comision comisionEliminada = comisionService.obtenerPorId(comisionGuardada.getId());
-        assertNull(comisionEliminada);
+    void obtenerPorId_SiExiste_RetornaLaComisionReal() {
+        String idReal = comisionPrueba.getId();
+
+        Comision resultado = comisionService.obtenerPorId(idReal);
+
+        assertNotNull(resultado);
+        assertEquals(idReal, resultado.getId());
+        assertEquals("Programación", resultado.getCarrera());
+    }
+
+    @Test
+    void obtenerPorId_SiNoExiste_LanzaExcepcion() {
+        String idInvalido = "id-que-no-existe-123";
+
+        assertThrows(RecursoNoEncontradoException.class, () -> {
+            comisionService.obtenerPorId(idInvalido);
+        });
+    }
+
+    @Test
+    void agregarTutorAComision_ActualizaLaComisionEnBD() {
+        String idTutor = tutorPrueba.getId();
+        String idComision = comisionPrueba.getId();
+
+        Comision resultado = comisionService.cambiarDeTutorEnComision(idTutor, idComision);
+
+        assertNotNull(resultado.getTutor());
+        assertEquals(idTutor, resultado.getTutor().getId());
+
+        Comision comisionEnBD = comisionDAO.findById(idComision).get();
+
+        assertEquals(idTutor, comisionEnBD.getTutor().getId());
+    }
+
+    @Test
+    void agregarTutorAComision_SiYaTieneTutor_LanzaExcepcion() {
+        comisionPrueba.setTutor(tutorPrueba);
+        comisionDAO.save(comisionPrueba);
+
+        String idTutor = tutorPrueba.getId();
+        String idComision = comisionPrueba.getId();
+
+        ReglaDeNegocioException excepcion = assertThrows(ReglaDeNegocioException.class, () -> {
+            comisionService.agregarTutorAComision(idTutor, idComision);
+        });
+
+        assertTrue(excepcion.getMessage().contains("ya tiene un TUTOR"));
+    }
+
+    @Test
+    void eliminarPorId_BorraFisicamenteLaComision() {
+        String idEliminar = comisionPrueba.getId();
+
+        assertTrue(comisionDAO.existsById(idEliminar));
+
+        comisionService.eliminarPorId(idEliminar);
+
+        assertFalse(comisionDAO.existsById(idEliminar));
     }
 }

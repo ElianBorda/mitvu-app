@@ -12,10 +12,13 @@ import java.util.List;
 public interface ComisionDAO extends MongoRepository<Comision, String> {
     Comision getById(String id);
     List<Comision> findByLocalidadAndDepartamentoAndCarrera(String localidad, String departamento, String carrera);
-    ArrayList<Comision> findByTutorIsEmpty();
 
     @Query("{ 'tutor': null }")
-    List<Comision> findSinTutor();
+    List<Comision> findByTutorIsEmpty();
+
 
     long countComisionsByDepartamentoAndLocalidadAndCarrera(String departamento, String localidad, String carrera);
+
+    @Query("{ 'tutor.id' : ?0 }")
+    List<Comision> findByTutorId(String idTutor);
 }

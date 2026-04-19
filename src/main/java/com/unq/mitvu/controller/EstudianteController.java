@@ -1,15 +1,26 @@
 package com.unq.mitvu.controller;
 
-import com.unq.mitvu.controller.body.EstudianteBody;
+import com.unq.mitvu.controller.body.EstudianteBodyDTO;
+import com.unq.mitvu.controller.dto.detalle.ComisionParaEstudianteDTO;
+import com.unq.mitvu.controller.dto.detalle.EstudianteDetalleDTO;
+import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
+import com.unq.mitvu.controller.dto.resumen.TutorResumenDTO;
+import com.unq.mitvu.mapper.ComisionMapper;
+import com.unq.mitvu.mapper.EstudianteMapper;
+import com.unq.mitvu.mapper.TutorMapper;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
+import com.unq.mitvu.model.Tutor;
 import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.EstudianteService;
+import com.unq.mitvu.service.TutorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -17,80 +28,50 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class EstudianteController {
 
-    @Autowired
-    private EstudianteService estudianteService;
+    @Autowired private TutorService tutorService;
+    @Autowired private ComisionService comisionService;
+    @Autowired private EstudianteService estudianteService;
 
-    @Autowired
-    private ComisionService comisionService;
-
-    @PostMapping
-    public ResponseEntity<EstudianteBody> createEstudiante(@RequestBody EstudianteBody body) {
-
-        Estudiante estudiante = body.toEstudiante();
-        String comision_id = body.getComision_id();
-
-        Estudiante estudianteGuardado;
-
-        if (comision_id != null && !comision_id.isEmpty()) {
-            estudiante.setComision(comisionService.obtenerPorId(comision_id));
-            estudianteGuardado = estudianteService.crear(estudiante);
-            comisionService.agregarEstudianteAComision(estudianteGuardado, comision_id);
-        } else {
-            estudianteGuardado = estudianteService.crear(estudiante);
-        }
-
-        return new ResponseEntity<>(
-                EstudianteBody.fromEstudiante(estudianteGuardado),
-                HttpStatus.CREATED
-        );
-    }
+    @Autowired private TutorMapper tutorMapper;
+    @Autowired private ComisionMapper comisionMapper;
+    @Autowired private EstudianteMapper estudianteMapper;
 
     @GetMapping
-    public ResponseEntity<List<EstudianteBody>> getAllEstudiantes() {
+    public ResponseEntity<List<EstudianteResumenDTO>> obtenerEstudiantes(){
         List<Estudiante> estudiantes = estudianteService.obtenerTodos();
-        List<EstudianteBody> estudiantesBody = estudiantes.stream().map(
-                EstudianteBody::fromEstudiante
-        ).toList();
-
-        return new ResponseEntity<>(estudiantesBody, HttpStatus.OK);
+        List<EstudianteResumenDTO> estudiantesResumen = estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes);
+        return ResponseEntity.ok(estudiantesResumen);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EstudianteBody> getEstudianteById(@PathVariable String id) {
+    public ResponseEntity<EstudianteDetalleDTO> obtenerEstudiante(@PathVariable String id){
         Estudiante estudiante = estudianteService.obtenerPorId(id);
-        return new ResponseEntity<>(EstudianteBody.fromEstudiante(estudiante), HttpStatus.OK);
+        EstudianteDetalleDTO estudianteDetalle = estudianteMapper.aEstudianteDetalleDTO(estudiante);
+        if (estudiante.getComision() != null && estudiante.getComision().getId() != null) {
+            Comision comision = comisionService.obtenerPorId(estudiante.getComision().getId());
+            ComisionParaEstudianteDTO comisionParaEstudianteDTO = comisionMapper.aComisionParaEstudianteDTO(comision);
+            if (comision.getTutor() != null && comision.getTutor().getId() != null) {
+                Tutor tutor = tutorService.obtenerPorId(comision.getTutor().getId());
+                TutorResumenDTO tutorDTO = tutorMapper.aTutorResumenDTO(tutor);
+                comisionParaEstudianteDTO.setTutor(tutorDTO);
+            }
+            estudianteDetalle.setComision(comisionParaEstudianteDTO);
+        }
+        estudianteDetalle.setRol(estudiante.getRol().getDescripcionRol());
+        return ResponseEntity.ok(estudianteDetalle);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EstudianteBody> updateEstudiante(@PathVariable String id, @RequestBody EstudianteBody body) {
-        Estudiante estudiante = estudianteService.modificarPorId(id, body.toEstudiante());
-        return new ResponseEntity<>(EstudianteBody.fromEstudiante(estudiante), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<EstudianteResumenDTO> crearEstudiante(@Valid @RequestBody EstudianteBodyDTO estudianteBodyDTO) {
+        Estudiante nuevoEstudiante = estudianteMapper.aEstudiante(estudianteBodyDTO);
+        Estudiante estudianteGuardado = estudianteService.crear(nuevoEstudiante);
+        EstudianteResumenDTO response = estudianteMapper.aEstudianteResumenDTO(estudianteGuardado);
+        return ResponseEntity.created(URI.create("/api/estudiantes/" + response.getId())).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEstudiante(@PathVariable String id) {
+    public ResponseEntity<Void> eliminarEstudiante(@PathVariable String id) {
         estudianteService.eliminarPorId(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
-
-    @DeleteMapping
-    public ResponseEntity<Void> deleteAllEstudiantes() {
-        estudianteService.eliminarTodo();
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @PostMapping("/{estudianteId}/asignar-comision/{comisionId}")
-    public ResponseEntity<EstudianteBody> asignarEstudianteAComision(@PathVariable String estudianteId, @PathVariable String comisionId) {
-        Estudiante estudiante = estudianteService.obtenerPorId(estudianteId);
-        Comision comision = comisionService.obtenerPorId(comisionId);
-
-        estudiante.setComision(comision);
-        Estudiante estudianteConCom = estudianteService.modificarPorId(estudianteId, estudiante);
-
-        comisionService.agregarEstudianteAComision(estudiante, comisionId);
-
-        return new ResponseEntity<>(EstudianteBody.fromEstudiante(estudianteConCom), HttpStatus.OK);
-    }
-
-
 }

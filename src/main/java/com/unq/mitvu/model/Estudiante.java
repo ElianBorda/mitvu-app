@@ -4,6 +4,10 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ToString
 @Getter
@@ -11,34 +15,23 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "estudiantes")
-public class Estudiante {
+public class Estudiante extends Usuario {
 
-    @Id
-    private String id;
-    private String apellido;
-    private String nombre;
-    private String dni;
     private String carrera;
+    private List<Asistencia> asistencias = new ArrayList<>();
 
-    @DBRef
+    @DocumentReference(lazy = true)
     private Comision comision;
 
-    private Integer cantidadAsistencias;
-
-    public Estudiante(String apellido, String nombre, String dni, String carrera, Integer cantidadAsistencias, Comision comision) {
-        this.apellido = apellido;
-        this.nombre = nombre;
-        this.dni = dni;
-        this.carrera = carrera;
-        this.cantidadAsistencias = cantidadAsistencias == null ? 0 : cantidadAsistencias;
-        this.comision = comision;
+    public int getCantidadDeAsistencias() {
+        return (int) asistencias.stream().filter(Asistencia::getAsistio).count();
     }
 
-    public Estudiante (String apellido, String nombre, String dni, String carrera, Integer cantidadAsistencias) {
-        this.apellido = apellido;
-        this.nombre = nombre;
-        this.dni = dni;
-        this.carrera = carrera;
-        this.cantidadAsistencias = cantidadAsistencias;
+    public int getCantidadDeFaltas(){
+        return (int) asistencias.stream().filter(asistencia -> !asistencia.getAsistio()).count();
+    }
+
+    public void agregarAsistencia(Asistencia asistencia) {
+        asistencias.add(asistencia);
     }
 }

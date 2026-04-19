@@ -2,16 +2,14 @@ package com.unq.mitvu.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 @ToString
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "comisiones")
 public class Comision {
 
@@ -24,63 +22,20 @@ public class Comision {
     private String aula;
     private Horario horarioInicio;
     private Horario horarioFin;
+    private DiaHabil diaHabil;
     private Turno turno;
 
-    @DBRef
+    @DocumentReference(lazy = true)
     private Tutor tutor;
 
-    @DBRef
-    private ArrayList<Estudiante> estudiantes = new ArrayList<>();
-
-    public Comision(
-            Tutor tutor,
-            Horario horarioFin,
-            Horario horarioInicio,
-            String aula,
-            String carrera,
-            String departamento,
-            String localidad,
-            Integer numero
-    ) {
-        this.tutor = tutor;
-        this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
-        this.horarioFin = horarioFin;
-        this.horarioInicio = horarioInicio;
-        this.aula = aula;
-        this.carrera = carrera;
-        this.departamento = departamento;
-        this.localidad = localidad;
-        this.numero = numero;
-    }
-
-    public Comision(
-            ArrayList<Estudiante> estudiantes,
-            Horario horarioFin,
-            Horario horarioInicio,
-            String aula,
-            String carrera,
-            String departamento,
-            String localidad,
-            Integer numero
-    ) {
-        this.estudiantes = estudiantes;
-        this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
-        this.horarioFin = horarioFin;
-        this.horarioInicio = horarioInicio;
-        this.aula = aula;
-        this.carrera = carrera;
-        this.departamento = departamento;
-        this.localidad = localidad;
-        this.numero = numero;
-    }
-
-    public Comision(String localidad, String departamento, String carrera, String aula, Horario horarioInicio, Horario horarioFin) {
+    public Comision(String localidad, String departamento, String carrera, String aula, Horario horarioInicio, Horario horarioFin, DiaHabil diaHabil) {
         this.localidad = localidad;
         this.departamento = departamento;
         this.carrera = carrera;
         this.aula = aula;
         this.horarioInicio = horarioInicio;
         this.horarioFin = horarioFin;
+        this.diaHabil = diaHabil;
         this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
     }
 }
