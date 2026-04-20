@@ -1,6 +1,7 @@
 package com.unq.mitvu.controller.dto.resumen;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.unq.mitvu.model.Turno;
 import lombok.Data;
 
 @Data
@@ -14,4 +15,5 @@ public class ComisionResumenDTO {
     private String horarioInicio;
     private String horarioFin;
     private String diaHabil;
+    private Turno turno;
 }

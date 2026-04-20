@@ -7,6 +7,7 @@ import com.unq.mitvu.exceptions.RecursoNoEncontradoException;
 import com.unq.mitvu.exceptions.ReglaDeNegocioException;
 import com.unq.mitvu.mapper.ComisionMapper;
 import com.unq.mitvu.model.*;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ public class ComisionServiceImpl implements ComisionService {
 
     @Override
     public Comision crear(Comision comision) {
+        comision.setTurno(comision.getHorarioFin().definirTurnoConHorarioFinal(comision.getHorarioFin()));
         comision.setNumero(Math.toIntExact(comisionDAO.countComisionsByDepartamentoAndLocalidadAndCarrera(comision.getDepartamento(), comision.getLocalidad(), comision.getCarrera())));
         return comisionDAO.save(comision);
     }
@@ -63,7 +65,7 @@ public class ComisionServiceImpl implements ComisionService {
 
     @Override
     public void eliminarPorId(String id) {
-        List<Estudiante> estudiantes = estudianteDAO.findByComisionId(id);
+        List<Estudiante> estudiantes = estudianteDAO.findByComisionId(new ObjectId(id));
         estudiantes.forEach(est -> est.setComision(null));
         estudianteDAO.saveAll(estudiantes);
         this.obtenerPorId(id);

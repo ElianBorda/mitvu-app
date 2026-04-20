@@ -9,6 +9,7 @@ import com.unq.mitvu.mapper.EstudianteMapper;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.model.Rol;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,7 +103,7 @@ public class EstudianteServiceImpl implements EstudianteService {
         if (!comisionDAO.existsById(idComision)) {
             throw new RecursoNoEncontradoException(idComision, "No se encontró la COMISION con id: " + idComision);
         }
-        return estudianteDAO.findByComisionId(idComision);
+        return estudianteDAO.findByComisionId(new ObjectId(idComision));
     }
 
     @Override

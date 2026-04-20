@@ -1,8 +1,8 @@
 package com.unq.mitvu.controller;
 
 import com.unq.mitvu.controller.body.ComisionBodyDTO;
-import com.unq.mitvu.controller.body.IDsBodyDTO;
 import com.unq.mitvu.controller.dto.detalle.ComisionDetalleDTO;
+import com.unq.mitvu.controller.dto.detalle.TutorDetalleDTO;
 import com.unq.mitvu.controller.dto.resumen.ComisionResumenDTO;
 import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
 import com.unq.mitvu.controller.dto.resumen.TutorResumenDTO;
@@ -17,6 +17,7 @@ import com.unq.mitvu.service.EstudianteService;
 import com.unq.mitvu.service.TutorService;
 import jakarta.validation.Valid;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +39,10 @@ public class ComisionController {
     @Autowired private EstudianteMapper estudianteMapper;
 
     @GetMapping
-    public ResponseEntity<List<ComisionResumenDTO>> obtenerComisiones(){
-        return ResponseEntity.ok(comisionMapper.aListaDeComisionResumenDTO(comisionService.obtenerTodos()));
+    public ResponseEntity<List<ComisionDetalleDTO>> obtenerComisiones(){
+        List<Comision> comisiones = comisionService.obtenerTodos();
+        List<ComisionDetalleDTO> comisionesDetalle = comisiones.stream().map(c -> getComisionDetalleDTOResponseEntity(c).getBody()).toList();
+        return ResponseEntity.ok(comisionesDetalle);
     }
 
     @GetMapping("/{id}")

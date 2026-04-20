@@ -3,6 +3,7 @@ package com.unq.mitvu.controller;
 import com.unq.mitvu.controller.body.EstudianteBodyDTO;
 import com.unq.mitvu.controller.dto.detalle.ComisionParaEstudianteDTO;
 import com.unq.mitvu.controller.dto.detalle.EstudianteDetalleDTO;
+import com.unq.mitvu.controller.dto.resumen.ComisionResumenDTO;
 import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
 import com.unq.mitvu.controller.dto.resumen.TutorResumenDTO;
 import com.unq.mitvu.mapper.ComisionMapper;
@@ -15,6 +16,7 @@ import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.EstudianteService;
 import com.unq.mitvu.service.TutorService;
 import jakarta.validation.Valid;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,41 +39,60 @@ public class EstudianteController {
     @Autowired private EstudianteMapper estudianteMapper;
 
     @GetMapping
-    public ResponseEntity<List<EstudianteResumenDTO>> obtenerEstudiantes(){
+    public ResponseEntity<List<EstudianteDetalleDTO>> obtenerEstudiantes(){
         List<Estudiante> estudiantes = estudianteService.obtenerTodos();
-        List<EstudianteResumenDTO> estudiantesResumen = estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes);
-        return ResponseEntity.ok(estudiantesResumen);
+        List<EstudianteDetalleDTO> estudiantesDetalle = estudiantes.stream().map(e -> getEstudianteDetalleDTOResponseEntity(e).getBody()).toList();
+        return ResponseEntity.ok(estudiantesDetalle);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EstudianteDetalleDTO> obtenerEstudiante(@PathVariable String id){
         Estudiante estudiante = estudianteService.obtenerPorId(id);
-        EstudianteDetalleDTO estudianteDetalle = estudianteMapper.aEstudianteDetalleDTO(estudiante);
-        if (estudiante.getComision() != null && estudiante.getComision().getId() != null) {
-            Comision comision = comisionService.obtenerPorId(estudiante.getComision().getId());
-            ComisionParaEstudianteDTO comisionParaEstudianteDTO = comisionMapper.aComisionParaEstudianteDTO(comision);
-            if (comision.getTutor() != null && comision.getTutor().getId() != null) {
-                Tutor tutor = tutorService.obtenerPorId(comision.getTutor().getId());
-                TutorResumenDTO tutorDTO = tutorMapper.aTutorResumenDTO(tutor);
-                comisionParaEstudianteDTO.setTutor(tutorDTO);
-            }
-            estudianteDetalle.setComision(comisionParaEstudianteDTO);
-        }
-        estudianteDetalle.setRol(estudiante.getRol().getDescripcionRol());
-        return ResponseEntity.ok(estudianteDetalle);
+        return getEstudianteDetalleDTOResponseEntity(estudiante);
     }
 
     @PostMapping
-    public ResponseEntity<EstudianteResumenDTO> crearEstudiante(@Valid @RequestBody EstudianteBodyDTO estudianteBodyDTO) {
-        Estudiante nuevoEstudiante = estudianteMapper.aEstudiante(estudianteBodyDTO);
-        Estudiante estudianteGuardado = estudianteService.crear(nuevoEstudiante);
-        EstudianteResumenDTO response = estudianteMapper.aEstudianteResumenDTO(estudianteGuardado);
-        return ResponseEntity.created(URI.create("/api/estudiantes/" + response.getId())).body(response);
+    public ResponseEntity<EstudianteResumenDTO> crearEstudiante(@Valid @RequestBody EstudianteBodyDTO dto) {
+
+        Estudiante estudiante = estudianteMapper.aEstudiante(dto);
+
+        String comision_id = dto.getComision_id();
+
+        if (comision_id != null && !comision_id.isEmpty()) {
+            Comision comision = comisionService.obtenerPorId(comision_id);
+            estudiante.setComision(comision);
+        }
+
+        Estudiante estudianteGuardado = estudianteService.crear(estudiante);
+        return ResponseEntity
+                .created(URI.create("/api/estudiantes/" + estudianteGuardado.getId()))
+                .body(estudianteMapper.aEstudianteResumenDTO(estudianteGuardado));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEstudiante(@PathVariable String id) {
         estudianteService.eliminarPorId(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{estudianteId}/asignar-comision/{comisionId}")
+    public ResponseEntity<EstudianteDetalleDTO> asignarEstudianteAComision(@PathVariable String estudianteId, @PathVariable String comisionId) {
+        Estudiante estudiante = estudianteService.obtenerPorId(estudianteId);
+        Comision comision = comisionService.obtenerPorId(comisionId);
+
+        estudiante.setComision(comision);
+        Estudiante estudianteConCom = estudianteService.modificarPorId(estudianteId, estudiante);
+
+        return getEstudianteDetalleDTOResponseEntity(estudianteConCom);
+    }
+
+    @NonNull
+    private ResponseEntity<EstudianteDetalleDTO> getEstudianteDetalleDTOResponseEntity(Estudiante estudiante) {
+        EstudianteDetalleDTO estudianteDetalle =  estudianteMapper.aEstudianteDetalleDTO(estudiante);
+        Comision comisionEstudiante = estudiante.getComision();
+        if (comisionEstudiante != null && comisionEstudiante.getId() != null) {
+            estudianteDetalle.setComision(comisionMapper.aComisionParaEstudianteDTO(comisionEstudiante));
+        }
+        return ResponseEntity.ok(estudianteDetalle);
     }
 }

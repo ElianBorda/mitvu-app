@@ -7,6 +7,7 @@ import com.unq.mitvu.controller.dto.detalle.ComisionParaTutorDTO;
 import com.unq.mitvu.controller.dto.resumen.ComisionResumenDTO;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Horario;
+import org.jspecify.annotations.Nullable;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -34,8 +35,10 @@ public interface ComisionMapper {
 
     @Named("mapeoDetalle")
     @Mapping(target = "estudiantes", ignore = true) // Lo llenamos en el controller
-    @Mapping(target = "tutor", ignore = true)
+    @Mapping(target = "tutor") //, ignore = false)
     ComisionDetalleDTO aComisionDetalleDTO(Comision comision);
+    @IterableMapping(qualifiedByName = "mapeoDetalle")
+    @Nullable List<ComisionDetalleDTO> aListaDeComisionDetalleDTO(List<Comision> comisions);
 
     default Horario stringAHorario(String tiempo) {
         if (tiempo == null || tiempo.isEmpty()) {
