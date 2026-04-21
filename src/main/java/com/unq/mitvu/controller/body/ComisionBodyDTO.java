@@ -27,6 +27,6 @@ public class ComisionBodyDTO {
     @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", message = "Formato de hora inválido (HH:mm)")
     private String horarioFin;
 
-    @NotNull(message = "El día hábil es obligatorio")
-    private String diaHabil;
+    //@NotNull(message = "El día hábil es obligatorio")
+    //private String diaHabil;
 }
