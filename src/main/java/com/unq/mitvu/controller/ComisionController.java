@@ -82,9 +82,10 @@ public class ComisionController {
     }
 
     @GetMapping({"/tutor/{idTutor}"})
-    public ResponseEntity<List<ComisionResumenDTO>> obtenerComisionesDeTutor(@PathVariable String idTutor) {
+    public ResponseEntity<List<ComisionDetalleDTO>> obtenerComisionesDeTutor(@PathVariable String idTutor) {
         List<Comision> comisiones = comisionService.obtenerComisionesDeTutor(idTutor);
-        return ResponseEntity.ok(comisionMapper.aListaDeComisionResumenDTO(comisiones));
+        List<ComisionDetalleDTO> comisionesDetalle = comisiones.stream().map(c -> getComisionDetalleDTOResponseEntity(c).getBody()).toList();
+        return ResponseEntity.ok(comisionesDetalle);
     }
 
     @GetMapping({"/sinTutor"})

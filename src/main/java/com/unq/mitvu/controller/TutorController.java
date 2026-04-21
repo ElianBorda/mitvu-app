@@ -2,6 +2,7 @@ package com.unq.mitvu.controller;
 
 import com.unq.mitvu.controller.body.IDsBodyDTO;
 import com.unq.mitvu.controller.body.TutorBodyDTO;
+import com.unq.mitvu.controller.dto.detalle.ComisionDetalleDTO;
 import com.unq.mitvu.controller.dto.detalle.ComisionParaTutorDTO;
 import com.unq.mitvu.controller.dto.detalle.TutorDetalleDTO;
 import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
@@ -79,6 +80,13 @@ public class TutorController {
         comisionService.agregarTutorAComisionesPorId(idTutor, idComisiones.getIds());
         Tutor tutor = tutorService.obtenerPorId(idTutor);
         return this.getTutorDetalleDTOResponseEntity(tutor);
+    }
+
+    @GetMapping({"comision/{idComision}"})
+    public ResponseEntity<TutorDetalleDTO> obtenerTutorDeLaComision(@PathVariable String idComision) {
+        Comision comision = comisionService.obtenerPorId(idComision);
+        TutorDetalleDTO tutorComisionDetalle = getTutorDetalleDTOResponseEntity(comision.getTutor()).getBody();
+        return ResponseEntity.ok(tutorComisionDetalle);
     }
 
     @NotNull
