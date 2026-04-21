@@ -7,4 +7,8 @@ import java.util.List;
 @Data
 public class IDsBodyDTO {
     private List<String> ids;
+
+    public IDsBodyDTO(List<String> ids) {
+        this.ids = ids;
+    }
 }

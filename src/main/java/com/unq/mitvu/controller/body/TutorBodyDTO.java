@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 public class TutorBodyDTO {
     @NotBlank(message = "El apellido es obligatorio")
@@ -18,4 +20,6 @@ public class TutorBodyDTO {
     @NotBlank(message = "El mail es obligatorio")
     @Email(message = "Debe ser un formato de correo electrónico válido")
     private String mail;
+
+    private List<String> comisiones_ids;
 }

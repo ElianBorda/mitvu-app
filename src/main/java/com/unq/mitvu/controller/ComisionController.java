@@ -1,7 +1,6 @@
 package com.unq.mitvu.controller;
 
 import com.unq.mitvu.controller.body.ComisionBodyDTO;
-import com.unq.mitvu.controller.body.IDsBodyDTO;
 import com.unq.mitvu.controller.dto.detalle.ComisionDetalleDTO;
 import com.unq.mitvu.controller.dto.resumen.ComisionResumenDTO;
 import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
@@ -38,8 +37,10 @@ public class ComisionController {
     @Autowired private EstudianteMapper estudianteMapper;
 
     @GetMapping
-    public ResponseEntity<List<ComisionResumenDTO>> obtenerComisiones(){
-        return ResponseEntity.ok(comisionMapper.aListaDeComisionResumenDTO(comisionService.obtenerTodos()));
+    public ResponseEntity<List<ComisionDetalleDTO>> obtenerComisiones(){
+        List<Comision> comisiones = comisionService.obtenerTodos();
+        List<ComisionDetalleDTO> comisionesDetalle = comisiones.stream().map(c -> getComisionDetalleDTOResponseEntity(c).getBody()).toList();
+        return ResponseEntity.ok(comisionesDetalle);
     }
 
     @GetMapping("/{id}")
@@ -81,9 +82,10 @@ public class ComisionController {
     }
 
     @GetMapping({"/tutor/{idTutor}"})
-    public ResponseEntity<List<ComisionResumenDTO>> obtenerComisionesDeTutor(@PathVariable String idTutor) {
+    public ResponseEntity<List<ComisionDetalleDTO>> obtenerComisionesDeTutor(@PathVariable String idTutor) {
         List<Comision> comisiones = comisionService.obtenerComisionesDeTutor(idTutor);
-        return ResponseEntity.ok(comisionMapper.aListaDeComisionResumenDTO(comisiones));
+        List<ComisionDetalleDTO> comisionesDetalle = comisiones.stream().map(c -> getComisionDetalleDTOResponseEntity(c).getBody()).toList();
+        return ResponseEntity.ok(comisionesDetalle);
     }
 
     @GetMapping({"/sinTutor"})

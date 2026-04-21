@@ -19,7 +19,6 @@ import com.unq.mitvu.service.TutorService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,10 +42,10 @@ public class TutorController {
     @Autowired private EstudianteMapper estudianteMapper;
 
     @GetMapping
-    public ResponseEntity<List<TutorResumenDTO>> obtenerTutores() {
+    public ResponseEntity<List<TutorDetalleDTO>> obtenerTutores() {
         List<Tutor> tutores = tutorService.obtenerTodos();
-        List<TutorResumenDTO> tutoresResumen = tutorMapper.aListaDeTutorResumenDTO(tutores);
-        return ResponseEntity.ok(tutoresResumen);
+        List<TutorDetalleDTO> tutoresDetalle = tutores.stream().map(t -> getTutorDetalleDTOResponseEntity(t).getBody()).toList();
+        return ResponseEntity.ok(tutoresDetalle);
     }
 
     @GetMapping("/{id}")
@@ -58,7 +57,14 @@ public class TutorController {
     @PostMapping
     public ResponseEntity<TutorResumenDTO> crearTutor(@Valid @RequestBody TutorBodyDTO tutorBodyDTO) {
         Tutor nuevoTutor = tutorMapper.aTutor(tutorBodyDTO);
+        List<String> comisiones_ids = tutorBodyDTO.getComisiones_ids();
+
         Tutor tutorGuardado = tutorService.crear(nuevoTutor);
+
+        if (comisiones_ids != null &&  !comisiones_ids.isEmpty()) {
+            IDsBodyDTO idsBodyDTO = new IDsBodyDTO(comisiones_ids);
+            agregarTutorAComisionesPorId(tutorGuardado.getId(), idsBodyDTO);
+        }
         TutorResumenDTO response = tutorMapper.aTutorResumenDTO(tutorGuardado);
         return ResponseEntity.created(URI.create("/api/tutores/" + response.getId())).body(response);
     }
@@ -74,6 +80,13 @@ public class TutorController {
         comisionService.agregarTutorAComisionesPorId(idTutor, idComisiones.getIds());
         Tutor tutor = tutorService.obtenerPorId(idTutor);
         return this.getTutorDetalleDTOResponseEntity(tutor);
+    }
+
+    @GetMapping({"comision/{idComision}"})
+    public ResponseEntity<TutorDetalleDTO> obtenerTutorDeLaComision(@PathVariable String idComision) {
+        Comision comision = comisionService.obtenerPorId(idComision);
+        TutorDetalleDTO tutorComisionDetalle = getTutorDetalleDTOResponseEntity(comision.getTutor()).getBody();
+        return ResponseEntity.ok(tutorComisionDetalle);
     }
 
     @NotNull
