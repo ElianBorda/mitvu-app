@@ -15,6 +15,7 @@ import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.EstudianteService;
 import com.unq.mitvu.service.TutorService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -86,6 +87,11 @@ public class ComisionController {
         List<Comision> comisiones = comisionService.obtenerComisionesDeTutor(idTutor);
         List<ComisionDetalleDTO> comisionesDetalle = comisiones.stream().map(c -> getComisionDetalleDTOResponseEntity(c).getBody()).toList();
         return ResponseEntity.ok(comisionesDetalle);
+    }
+
+    @GetMapping({"/estudiante/{idEstudiante}"})
+    public ResponseEntity<ComisionDetalleDTO> obtenerComisionDeEstudiante(@PathVariable String idEstudiante) {
+        return getComisionDetalleDTOResponseEntity(comisionService.obtenerComisionDeEstudiante(idEstudiante));
     }
 
     @GetMapping({"/sinTutor"})

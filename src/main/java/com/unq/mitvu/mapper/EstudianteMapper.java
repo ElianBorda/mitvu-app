@@ -8,11 +8,13 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface EstudianteMapper {
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void actualizarEstudiante(Estudiante datosNuevos, @MappingTarget Estudiante entidadExistente);
 
-    Estudiante aEstudiante(EstudianteBodyDTO estudianteResumenDTO);
+    Estudiante aEstudiante(EstudianteBodyDTO estudiantebodyDTO);
 
     @Named("mapeoResumen")
     EstudianteResumenDTO aEstudianteResumenDTO(Estudiante estudiante);

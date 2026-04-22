@@ -18,9 +18,9 @@ public interface ComisionService {
     List<Comision> agregarTutorAComisionesPorId(String idTutor, List<String> idsComisiones);
     List<Comision> obtenerComisionesDeTutor(String idTutor);
     List<Comision> obtenerComisionesSinTutor();
+    Comision obtenerComisionDeEstudiante(String idEstudiante);
     List<Comision> obtenerTodos();
     Comision eliminarTutorDeComision(String idComision);
     List<Comision> eliminarTutorDeComisiones(String idTutor);
     List<Comision> eliminarTodosLosTutoresDeTodasLasComisiones();
-
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EstudianteDAO extends MongoRepository<Estudiante, String> {
@@ -23,4 +24,6 @@ public interface EstudianteDAO extends MongoRepository<Estudiante, String> {
     List<Estudiante> findByComisionIn(List<Comision> comisiones);
 
     List<Estudiante> findByComision_Tutor_Id(String comisionTutorId);
+
+    Optional<Estudiante> findByIdAndComisionIsNotNull(String id);
 }
