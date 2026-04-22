@@ -12,4 +12,5 @@ public interface TutorService {
     Tutor modificarPorId(String id, Tutor tutor);
     void eliminarPorId(String id);
     void eliminarTodo();
+    Tutor obtenerTutorDeLaComision(String idComision);
 }

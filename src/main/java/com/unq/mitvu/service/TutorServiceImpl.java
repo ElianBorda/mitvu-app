@@ -3,8 +3,10 @@ package com.unq.mitvu.service;
 import com.unq.mitvu.dao.ComisionDAO;
 import com.unq.mitvu.dao.TutorDAO;
 import com.unq.mitvu.exceptions.RecursoNoEncontradoException;
+import com.unq.mitvu.exceptions.ReglaDeNegocioException;
 import com.unq.mitvu.mapper.TutorMapper;
 import com.unq.mitvu.model.Comision;
+import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.model.Rol;
 import com.unq.mitvu.model.Tutor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,5 +75,22 @@ public class TutorServiceImpl implements TutorService {
         comisionDAO.saveAll(comisiones);
 
         tutorDAO.deleteAll();
+    }
+
+    @Override
+    public Tutor obtenerTutorDeLaComision(String idComision) {
+        Comision comision = comisionDAO.getById(idComision);
+
+        if (comision == null) {
+            throw new RecursoNoEncontradoException(idComision, "No existe una comision con id: " + idComision);
+        }
+
+        Comision comisionConTutor = comisionDAO
+                .findByIdAndTutorIsNotNull(idComision)
+                .orElseThrow(() -> new ReglaDeNegocioException(
+                        "La comision con id: " + idComision + " no tiene un tutor asignado"
+                ));
+
+        return comisionConTutor.getTutor();
     }
 }

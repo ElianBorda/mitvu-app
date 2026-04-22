@@ -84,9 +84,7 @@ public class TutorController {
 
     @GetMapping({"comision/{idComision}"})
     public ResponseEntity<TutorDetalleDTO> obtenerTutorDeLaComision(@PathVariable String idComision) {
-        Comision comision = comisionService.obtenerPorId(idComision);
-        TutorDetalleDTO tutorComisionDetalle = getTutorDetalleDTOResponseEntity(comision.getTutor()).getBody();
-        return ResponseEntity.ok(tutorComisionDetalle);
+        return getTutorDetalleDTOResponseEntity(tutorService.obtenerTutorDeLaComision(idComision));
     }
 
     @NotNull

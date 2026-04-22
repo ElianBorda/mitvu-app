@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ComisionDAO extends MongoRepository<Comision, String> {
@@ -20,4 +21,6 @@ public interface ComisionDAO extends MongoRepository<Comision, String> {
 
     @Query("{ 'tutor.id' : ?0 }")
     List<Comision> findByTutorId(String idTutor);
+
+    Optional<Comision> findByIdAndTutorIsNotNull(String idComision);
 }
