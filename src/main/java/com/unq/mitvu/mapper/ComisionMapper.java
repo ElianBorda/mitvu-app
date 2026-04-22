@@ -12,8 +12,10 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring")
 public interface ComisionMapper {
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void actualizarComision(Comision datosNuevos, @MappingTarget Comision entidadExistente);
 
     Comision aComision(ComisionBodyDTO comisionBodyDTO);

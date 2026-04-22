@@ -13,10 +13,10 @@ public class ComisionBodyDTO {
     @NotBlank(message = "El departamento es obligatorio")
     private String departamento;
 
-    @NotBlank(message = "La carrera es obligatoria")
+    // @NotBlank(message = "La carrera es obligatoria")
     private String carrera;
 
-    @NotBlank(message = "El aula es obligatoria")
+    // @NotBlank(message = "El aula es obligatoria")
     private String aula;
 
     @NotBlank(message = "El horario de inicio es obligatorio")
@@ -27,6 +27,6 @@ public class ComisionBodyDTO {
     @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", message = "Formato de hora inválido (HH:mm)")
     private String horarioFin;
 
-    //@NotNull(message = "El día hábil es obligatorio")
-    //private String diaHabil;
+    @NotNull(message = "El día hábil es obligatorio")
+    private String diaHabil;
 }

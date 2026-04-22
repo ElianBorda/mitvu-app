@@ -69,7 +69,7 @@ public class EstudianteController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{estudianteId}/asignar-comision/{comisionId}")
+    @PostMapping("/{estudianteId}/asignarComision/{comisionId}")
     public ResponseEntity<EstudianteDetalleDTO> asignarEstudianteAComision(@PathVariable String estudianteId, @PathVariable String comisionId) {
         Estudiante estudiante = estudianteService.obtenerPorId(estudianteId);
         Comision comision = comisionService.obtenerPorId(comisionId);
@@ -94,6 +94,7 @@ public class EstudianteController {
         if (comisionEstudiante != null && comisionEstudiante.getId() != null) {
             estudianteDetalle.setComision(comisionMapper.aComisionParaEstudianteDTO(comisionEstudiante));
         }
+        estudianteDetalle.setRol(estudiante.getRol().getDescripcionRol());
         return ResponseEntity.ok(estudianteDetalle);
     }
 }
