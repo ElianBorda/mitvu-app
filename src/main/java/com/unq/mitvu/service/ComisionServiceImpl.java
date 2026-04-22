@@ -128,6 +128,23 @@ public class ComisionServiceImpl implements ComisionService {
     }
 
     @Override
+    public Comision obtenerComisionDeEstudiante(String idEstudiante) {
+        Estudiante estudiante = estudianteDAO.getById(idEstudiante);
+
+        if (estudiante == null) {
+            throw new RecursoNoEncontradoException(idEstudiante, "No existe un estudiante con id: " + idEstudiante);
+        }
+
+        Estudiante estudianteConComision = estudianteDAO
+                .findByIdAndComisionIsNotNull(idEstudiante)
+                .orElseThrow(() -> new ReglaDeNegocioException(
+                        "El estudiante con id: " + idEstudiante + " no tiene una comision asignada"
+                ));
+
+        return estudianteConComision.getComision();
+    }
+
+    @Override
     public List<Comision> obtenerTodos() {
         return comisionDAO.findAll();
     }

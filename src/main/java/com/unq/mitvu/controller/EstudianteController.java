@@ -50,7 +50,6 @@ public class EstudianteController {
     public ResponseEntity<EstudianteResumenDTO> crearEstudiante(@Valid @RequestBody EstudianteBodyDTO dto) {
 
         Estudiante estudiante = estudianteMapper.aEstudiante(dto);
-
         String comision_id = dto.getComision_id();
 
         if (comision_id != null && !comision_id.isEmpty()) {
@@ -79,6 +78,13 @@ public class EstudianteController {
         Estudiante estudianteConCom = estudianteService.modificarPorId(estudianteId, estudiante);
 
         return getEstudianteDetalleDTOResponseEntity(estudianteConCom);
+    }
+
+    @GetMapping("/comision/{idComision}")
+    public ResponseEntity<List<EstudianteDetalleDTO>> obtenerEstudiantesDeComision(@PathVariable String idComision) {
+        List<Estudiante> estudiantes = estudianteService.obtenerEstudiantesDeComision(idComision);
+        List<EstudianteDetalleDTO> estudiantesDetalle = estudiantes.stream().map(e -> getEstudianteDetalleDTOResponseEntity(e).getBody()).toList();
+        return ResponseEntity.ok(estudiantesDetalle);
     }
 
     @NonNull
