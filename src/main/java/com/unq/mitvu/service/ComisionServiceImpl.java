@@ -33,14 +33,14 @@ public class ComisionServiceImpl implements ComisionService {
     @Override
     public Comision crear(Comision comision) {
         comision.setTurno(comision.getHorarioFin().definirTurnoConHorarioFinal(comision.getHorarioFin()));
-        comision.setNumero(Math.toIntExact(comisionDAO.countComisionsByDepartamentoAndLocalidadAndCarrera(comision.getDepartamento(), comision.getLocalidad(), comision.getCarrera())));
+        comision.setNumero(Math.toIntExact(comisionDAO.countComisionsByDepartamentoAndLocalidadAndCarrera(comision.getDepartamento(), comision.getLocalidad(), comision.getCarrera())) + 1);
         return comisionDAO.save(comision);
     }
 
     @Override
     public void crearTodos(List<Comision> comisiones) {
         comisiones.forEach(comision -> {
-            comision.setNumero(Math.toIntExact(comisionDAO.countComisionsByDepartamentoAndLocalidadAndCarrera(comision.getDepartamento(), comision.getLocalidad(), comision.getCarrera())));
+            comision.setNumero(Math.toIntExact(comisionDAO.countComisionsByDepartamentoAndLocalidadAndCarrera(comision.getDepartamento(), comision.getLocalidad(), comision.getCarrera())) + 1);
         });
         comisionDAO.saveAll(comisiones);
     }

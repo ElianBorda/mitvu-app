@@ -37,7 +37,7 @@ public class TutorServiceTest {
         comisionDAO.deleteAll();
         tutorDAO.deleteAll();
 
-        tutorPrueba = new Tutor("Gomez", "Ana", "11223344", "ana@unq.edu.ar", "pass");
+        tutorPrueba = new Tutor("Gomez", "Ana", "11223344", "ana@unq.edu.ar", "pass", Rol.TUTOR);
         tutorPrueba = tutorDAO.save(tutorPrueba);
 
         comisionPrueba = new Comision(
@@ -56,7 +56,7 @@ public class TutorServiceTest {
 
     @Test
     void crear_GuardaElTutorYGeneraId() {
-        Tutor nuevoTutor = new Tutor("Perez", "Juan", "40111222", "juan@unq.edu.ar");
+        Tutor nuevoTutor = new Tutor("Perez", "Juan", "40111222", "juan@unq.edu.ar", "pass",  Rol.TUTOR);
 
         Tutor resultado = tutorService.crear(nuevoTutor);
 
@@ -85,7 +85,7 @@ public class TutorServiceTest {
 
     @Test
     void modificarPorId_ActualizaLosDatosCorrectamente() {
-        Tutor datosNuevos = new Tutor("Gomez-Perez", "Ana", "11223344", "ana.nueva@unq.edu.ar");
+        Tutor datosNuevos = new Tutor("Gomez-Perez", "Ana", "11223344", "ana.nueva@unq.edu.ar", "pass", Rol.TUTOR);
         String idTutor = tutorPrueba.getId();
         Tutor resultado = tutorService.modificarPorId(idTutor, datosNuevos);
 
@@ -120,7 +120,7 @@ public class TutorServiceTest {
 
     @Test
     void obtenerTodos_RetornaTodosLosTutores() {
-        Tutor otroTutor = new Tutor("Martinez", "Carlos", "33445566", "carlos@unq.edu.ar");
+        Tutor otroTutor = new Tutor("Martinez", "Carlos", "33445566", "carlos@unq.edu.ar", "pass", Rol.TUTOR);
         tutorDAO.save(otroTutor);
 
         List<Tutor> tutores = tutorService.obtenerTodos();

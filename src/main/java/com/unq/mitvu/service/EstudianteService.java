@@ -23,4 +23,7 @@ public interface EstudianteService {
     List<Estudiante> obtenerTodosLosEstudiantesDeTutor(String idTutor);
     Estudiante darseDeBaja(String idEstudiante, FormularioBaja formularioBaja);
     List<Estudiante> obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(String idComision);
+    List<Estudiante> obtenerEstudiantesDeBaja();
+    List<Estudiante> obtenerEstudiantesActivos();
+    boolean estaDadoDeBaja(String idEstudiante);
 }

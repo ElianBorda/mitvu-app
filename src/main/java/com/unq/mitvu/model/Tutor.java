@@ -10,4 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "tutores")
 public class Tutor extends Usuario {
 
+    public Tutor(String apellido, String nombre, String dni, String mail, String password, Rol rol) {
+        super(apellido, nombre, dni, mail, password, rol);
+    }
 }

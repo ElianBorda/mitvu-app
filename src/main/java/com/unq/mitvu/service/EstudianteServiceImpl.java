@@ -156,6 +156,7 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     public Estudiante darseDeBaja(String idEstudiante, FormularioBaja formularioBaja) {
         Estudiante estudiante = this.obtenerPorId(idEstudiante);
+        String idComision = estudiante.getComision().getId();
         if (!estudiante.estaActivo()) {
             throw new ReglaDeNegocioException("El estudiante con id " + idEstudiante + " ya se encuentra dado de baja." );
         }
@@ -163,7 +164,7 @@ public class EstudianteServiceImpl implements EstudianteService {
             throw new ReglaDeNegocioException("El estudiante con id " + idEstudiante + " no se encuentra en ninguna comisión.");
         }
 
-        formularioBaja.setIdComisionDadoDeBaja(estudiante.getComision().getId());
+        formularioBaja.setIdComisionDadoDeBaja(idComision);
         estudiante.setBaja(formularioBaja);
         estudiante.setComision(null);
         return estudianteDAO.save(estudiante);
@@ -175,5 +176,23 @@ public class EstudianteServiceImpl implements EstudianteService {
             throw new RecursoNoEncontradoException(idComision, "No se encontró la COMISION con id: " + idComision);
         }
         return estudianteDAO.findByBaja_idComisionDadoDeBaja(idComision);
+    }
+
+    @Override
+    public List<Estudiante> obtenerEstudiantesDeBaja() {
+        List<Estudiante> estudiantesBaja = estudianteDAO.findByBajaIsNotNull();
+        return estudiantesBaja;
+    }
+
+    @Override
+    public List<Estudiante> obtenerEstudiantesActivos() {
+        List<Estudiante> estudiantesBaja = estudianteDAO.findByBajaIsNull();
+        return estudiantesBaja;
+    }
+
+    @Override
+    public boolean estaDadoDeBaja(String idEstudiante) {
+        Estudiante estudiante = this.obtenerPorId(idEstudiante);
+        return !estudiante.estaActivo();
     }
 }

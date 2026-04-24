@@ -47,7 +47,7 @@ public class EstudianteServiceTest {
         tutorDAO.deleteAll();
 
         // 2. Creación de Tutor
-        tutorPrueba = new Tutor("Gomez", "Ana", "11223344", "ana@unq.edu.ar", "pass");
+        tutorPrueba = new Tutor("Gomez", "Ana", "11223344", "ana@unq.edu.ar", "pass", Rol.TUTOR);
         tutorPrueba = tutorDAO.save(tutorPrueba);
 
         // 3. Creación de Comisión (y le asignamos el tutor)
