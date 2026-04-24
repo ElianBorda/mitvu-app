@@ -43,7 +43,7 @@ public class ComisionServiceTest {
                 horarioInicio, horarioFin, DiaHabil.LUNES
         );
 
-        tutorPrueba = new Tutor("Gomez", "Juan", "12345678", "juan@unq.edu.ar", "password123");
+        tutorPrueba = new Tutor("Gomez", "Juan", "12345678", "juan@unq.edu.ar", "password123", Rol.TUTOR);
 
         tutorPrueba = tutorService.crear(tutorPrueba);
         comisionPrueba = comisionDAO.save(comisionPrueba);
