@@ -19,6 +19,7 @@ public class Estudiante extends Usuario {
 
     private String carrera;
     private List<Asistencia> asistencias = new ArrayList<>();
+    private FormularioBaja baja;
 
     @DocumentReference(lazy = true)
     private Comision comision;
@@ -34,4 +35,8 @@ public class Estudiante extends Usuario {
     public void agregarAsistencia(Asistencia asistencia) {
         asistencias.add(asistencia);
     }
+    public boolean estaActivo(){
+        return this.baja == null;
+    }
+
 }

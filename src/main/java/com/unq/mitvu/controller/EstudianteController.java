@@ -1,5 +1,6 @@
 package com.unq.mitvu.controller;
 
+import com.unq.mitvu.controller.body.BajaEstudianteBodyDTO;
 import com.unq.mitvu.controller.body.EstudianteBodyDTO;
 import com.unq.mitvu.controller.dto.detalle.EstudianteDetalleDTO;
 import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
@@ -63,21 +64,22 @@ public class EstudianteController {
                 .body(estudianteMapper.aEstudianteResumenDTO(estudianteGuardado));
     }
 
+    @PostMapping("/varios")
+    public ResponseEntity<List<EstudianteResumenDTO>> crearEstudiantes(@Valid @RequestBody List<EstudianteBodyDTO> estudianteBodyDTOS) {
+        List<Estudiante> estudiantes = estudianteBodyDTOS.stream().map(estudianteMapper::aEstudiante).toList();
+        estudianteService.crearTodos(estudiantes);
+        return ResponseEntity.ok(estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEstudiante(@PathVariable String id) {
         estudianteService.eliminarPorId(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{estudianteId}/asignarComision/{comisionId}")
+    @PutMapping("/{estudianteId}/asignarComision/{comisionId}")
     public ResponseEntity<EstudianteDetalleDTO> asignarEstudianteAComision(@PathVariable String estudianteId, @PathVariable String comisionId) {
-        Estudiante estudiante = estudianteService.obtenerPorId(estudianteId);
-        Comision comision = comisionService.obtenerPorId(comisionId);
-
-        estudiante.setComision(comision);
-        Estudiante estudianteConCom = estudianteService.modificarPorId(estudianteId, estudiante);
-
-        return getEstudianteDetalleDTOResponseEntity(estudianteConCom);
+        return getEstudianteDetalleDTOResponseEntity(estudianteService.agregarEstudianteAComision(estudianteId, comisionId));
     }
 
     @GetMapping("/comision/{idComision}")
@@ -87,6 +89,18 @@ public class EstudianteController {
         return ResponseEntity.ok(estudiantesDetalle);
     }
 
+    @PutMapping("/{idEstudiante}/baja")
+    public ResponseEntity<EstudianteDetalleDTO> darDeBajaAEstudianteDeComision(@PathVariable String idEstudiante, @Valid @RequestBody BajaEstudianteBodyDTO bajaEstudianteBodyDTO){
+        Estudiante estudiante = estudianteService.darseDeBaja(idEstudiante, estudianteMapper.aFormularioBaja(bajaEstudianteBodyDTO));
+        return getEstudianteDetalleDTOResponseEntity(estudiante);
+    }
+
+    @GetMapping("/baja/{idComision}")
+    public ResponseEntity<List<EstudianteResumenDTO>> obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(@PathVariable String idComision){
+        List<Estudiante> estudiantes = estudianteService.obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(idComision);
+        return ResponseEntity.ok(estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes));
+    }
+
     @NonNull
     private ResponseEntity<EstudianteDetalleDTO> getEstudianteDetalleDTOResponseEntity(Estudiante estudiante) {
         EstudianteDetalleDTO estudianteDetalle =  estudianteMapper.aEstudianteDetalleDTO(estudiante);
@@ -94,6 +108,7 @@ public class EstudianteController {
         if (comisionEstudiante != null && comisionEstudiante.getId() != null) {
             estudianteDetalle.setComision(comisionMapper.aComisionParaEstudianteDTO(comisionEstudiante));
         }
+        estudianteDetalle.setBaja(estudianteMapper.aBajaEstudianteDTO(estudiante.getBaja()));
         estudianteDetalle.setRol(estudiante.getRol().getDescripcionRol());
         return ResponseEntity.ok(estudianteDetalle);
     }

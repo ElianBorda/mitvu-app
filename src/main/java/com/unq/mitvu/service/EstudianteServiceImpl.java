@@ -8,6 +8,7 @@ import com.unq.mitvu.exceptions.ReglaDeNegocioException;
 import com.unq.mitvu.mapper.EstudianteMapper;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
+import com.unq.mitvu.model.FormularioBaja;
 import com.unq.mitvu.model.Rol;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
-    public Estudiante obtenerPorId(String id) {
+    public Estudiante  obtenerPorId(String id) {
         return estudianteDAO.findById(id).orElseThrow(() ->
                 new RecursoNoEncontradoException(id, "No se encontró el ESTUDIANTE con id: " + id));
     }
@@ -76,6 +77,9 @@ public class EstudianteServiceImpl implements EstudianteService {
     @Override
     public Estudiante agregarEstudianteAComision(String idEstudiante, String idComision) {
         Estudiante estudiante = this.obtenerPorId(idEstudiante);
+        if (!estudiante.estaActivo()){
+            throw new ReglaDeNegocioException("No se puede asignar una comisión al ESTUDIANTE con id: " + idEstudiante + "  porque se encuentra dado de baja.");
+        }
         Comision comision = comisionDAO.findById(idComision).orElseThrow(() ->
                 new RecursoNoEncontradoException(idComision, "No se encontró la COMISION con id: " + idComision));
 
@@ -150,7 +154,26 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
-    public void darseDeBaja(String idEstudiante) {
-        // Implementación pendiente
+    public Estudiante darseDeBaja(String idEstudiante, FormularioBaja formularioBaja) {
+        Estudiante estudiante = this.obtenerPorId(idEstudiante);
+        if (!estudiante.estaActivo()) {
+            throw new ReglaDeNegocioException("El estudiante con id " + idEstudiante + " ya se encuentra dado de baja." );
+        }
+        if (estudiante.getComision() == null || estudiante.getComision().getId() == null){
+            throw new ReglaDeNegocioException("El estudiante con id " + idEstudiante + " no se encuentra en ninguna comisión.");
+        }
+
+        formularioBaja.setIdComisionDadoDeBaja(estudiante.getComision().getId());
+        estudiante.setBaja(formularioBaja);
+        estudiante.setComision(null);
+        return estudianteDAO.save(estudiante);
+    }
+
+    @Override
+    public List<Estudiante> obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(String idComision){
+        if (!comisionDAO.existsById(idComision)) {
+            throw new RecursoNoEncontradoException(idComision, "No se encontró la COMISION con id: " + idComision);
+        }
+        return estudianteDAO.findByBaja_idComisionDadoDeBaja(idComision);
     }
 }

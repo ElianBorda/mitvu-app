@@ -1,9 +1,12 @@
 package com.unq.mitvu.mapper;
 
+import com.unq.mitvu.controller.body.BajaEstudianteBodyDTO;
 import com.unq.mitvu.controller.body.EstudianteBodyDTO;
+import com.unq.mitvu.controller.dto.BajaEstudianteDTO;
 import com.unq.mitvu.controller.dto.detalle.EstudianteDetalleDTO;
 import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
 import com.unq.mitvu.model.Estudiante;
+import com.unq.mitvu.model.FormularioBaja;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -23,6 +26,11 @@ public interface EstudianteMapper {
     List<EstudianteResumenDTO> aListaDeEstudianteResumenDTO(List<Estudiante> estudiantes);
 
     @Named("mapeoDetalle")
-    @Mapping(target = "comision", ignore = true) // Lo llenamos en el controller
+    @Mapping(target = "comision", ignore = true)
     EstudianteDetalleDTO aEstudianteDetalleDTO(Estudiante estudiante);
+
+    @Mapping(target = "fechaBaja", expression = "java(java.time.LocalDate.now())")
+    FormularioBaja aFormularioBaja(BajaEstudianteBodyDTO bajaEstudianteBodyDTO);
+
+    BajaEstudianteDTO aBajaEstudianteDTO(FormularioBaja formularioBaja);
 }

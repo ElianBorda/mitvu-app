@@ -1,6 +1,7 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.model.Estudiante;
+import com.unq.mitvu.model.FormularioBaja;
 
 import java.util.List;
 
@@ -20,5 +21,6 @@ public interface EstudianteService {
     Estudiante cambiarEstudianteDeComision(String idEstudiante, String idComision);
     List<Estudiante> cambiarEstudiantesAComision(List<String> idsEstudiantes, String idComision);
     List<Estudiante> obtenerTodosLosEstudiantesDeTutor(String idTutor);
-    void darseDeBaja(String idEstudiante);
+    Estudiante darseDeBaja(String idEstudiante, FormularioBaja formularioBaja);
+    List<Estudiante> obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(String idComision);
 }
