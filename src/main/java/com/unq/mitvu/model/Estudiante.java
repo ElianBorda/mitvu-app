@@ -24,6 +24,11 @@ public class Estudiante extends Usuario {
     @DocumentReference(lazy = true)
     private Comision comision;
 
+    public Estudiante(String apellido, String nombre, String dni, String mail, String password, Rol rol, String carrera) {
+        super(apellido, nombre, dni, mail, password, rol);
+        this.carrera = carrera;
+    }
+
     public int getCantidadDeAsistencias() {
         return (int) asistencias.stream().filter(Asistencia::getAsistio).count();
     }

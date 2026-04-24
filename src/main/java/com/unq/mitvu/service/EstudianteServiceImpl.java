@@ -174,6 +174,25 @@ public class EstudianteServiceImpl implements EstudianteService {
         if (!comisionDAO.existsById(idComision)) {
             throw new RecursoNoEncontradoException(idComision, "No se encontró la COMISION con id: " + idComision);
         }
+        System.out.println("Entro a buscar por dao la comision con ID: " + idComision);
         return estudianteDAO.findByBaja_idComisionDadoDeBaja(idComision);
+    }
+
+    @Override
+    public List<Estudiante> obtenerEstudiantesDeBaja() {
+        List<Estudiante> estudiantesBaja = estudianteDAO.findByBajaIsNotNull();
+        return estudiantesBaja;
+    }
+
+    @Override
+    public List<Estudiante> obtenerEstudiantesActivos() {
+        List<Estudiante> estudiantesBaja = estudianteDAO.findByBajaIsNull();
+        return estudiantesBaja;
+    }
+
+    @Override
+    public boolean estaDadoDeBaja(String idEstudiante) {
+        Estudiante estudiante = this.obtenerPorId(idEstudiante);
+        return !estudiante.estaActivo();
     }
 }

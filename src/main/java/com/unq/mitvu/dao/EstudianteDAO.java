@@ -28,4 +28,8 @@ public interface EstudianteDAO extends MongoRepository<Estudiante, String> {
     Optional<Estudiante> findByIdAndComisionIsNotNull(String id);
 
     List<Estudiante> findByBaja_idComisionDadoDeBaja(String bajaIdComisionDadoDeBaja);
+
+    List<Estudiante> findByBajaIsNotNull();
+
+    List<Estudiante> findByBajaIsNull();
 }

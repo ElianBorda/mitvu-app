@@ -13,6 +13,7 @@ import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.EstudianteService;
 import com.unq.mitvu.service.TutorService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -95,7 +96,26 @@ public class EstudianteController {
         return getEstudianteDetalleDTOResponseEntity(estudiante);
     }
 
-    @GetMapping("/baja/{idComision}")
+    @GetMapping("/{idEstudiante}/dadoDeBaja")
+    public boolean estaDadoDeBaja(@PathVariable String idEstudiante){
+        return estudianteService.estaDadoDeBaja(idEstudiante);
+    }
+
+    @GetMapping("/baja")
+    public ResponseEntity<List<EstudianteDetalleDTO>> obtenerEstudiantesDeBaja() {
+        List<Estudiante> estudiantes = estudianteService.obtenerEstudiantesDeBaja();
+        List<EstudianteDetalleDTO> estudiantesDetalle = estudiantes.stream().map(e -> getEstudianteDetalleDTOResponseEntity(e).getBody()).toList();
+        return ResponseEntity.ok(estudiantesDetalle);
+    }
+
+    @GetMapping("/activos")
+    public ResponseEntity<List<EstudianteDetalleDTO>> obtenerEstudiantesActivos() {
+        List<Estudiante> estudiantes = estudianteService.obtenerEstudiantesActivos();
+        List<EstudianteDetalleDTO> estudiantesDetalle = estudiantes.stream().map(e -> getEstudianteDetalleDTOResponseEntity(e).getBody()).toList();
+        return ResponseEntity.ok(estudiantesDetalle);
+    }
+
+    @GetMapping("comision/{idComision}/baja")
     public ResponseEntity<List<EstudianteResumenDTO>> obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(@PathVariable String idComision){
         List<Estudiante> estudiantes = estudianteService.obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(idComision);
         return ResponseEntity.ok(estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes));
