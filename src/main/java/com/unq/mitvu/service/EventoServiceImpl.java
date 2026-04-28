@@ -51,7 +51,8 @@ public class EventoServiceImpl implements EventoService{
 
     @Override
     public void eliminarPorId(String id) {
-
+        this.obtenerPorId(id);
+        eventoDAO.deleteById(id);
     }
 
     @Override
