@@ -1,6 +1,7 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.EventoDAO;
+import com.unq.mitvu.dao.TutorDAO;
 import com.unq.mitvu.mapper.EventoMapper;
 import com.unq.mitvu.model.Evento;
 import com.unq.mitvu.model.Usuario;
@@ -16,6 +17,7 @@ public class EventoServiceImpl implements EventoService{
     private EventoMapper eventoMapper;
 
     private EventoDAO eventoDAO;
+    private TutorDAO tutorDAO;
 
     public EventoServiceImpl(EventoDAO eventoDAO) {
         this.eventoDAO = eventoDAO;
