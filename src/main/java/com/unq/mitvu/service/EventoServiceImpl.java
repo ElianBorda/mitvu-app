@@ -1,9 +1,11 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.model.Evento;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class EventoServiceImpl implements EventoService{
     @Override
     public Evento crear(Evento evento) {
