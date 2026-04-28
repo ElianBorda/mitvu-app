@@ -27,7 +27,9 @@ public class EventoServiceImpl implements EventoService{
 
     @Override
     public Evento obtenerPorId(String id) {
-        return null;
+        return eventoDAO.findById(id).orElseThrow(
+                () -> new RuntimeException("No se encontró el EVENTO con id: " + id)
+        );
     }
 
     @Override
