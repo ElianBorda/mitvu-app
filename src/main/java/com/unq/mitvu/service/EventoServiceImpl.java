@@ -57,6 +57,6 @@ public class EventoServiceImpl implements EventoService{
 
     @Override
     public void eliminarTodo() {
-
+        eventoDAO.deleteAll();
     }
 }
