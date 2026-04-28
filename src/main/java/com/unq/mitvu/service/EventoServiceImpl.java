@@ -34,7 +34,7 @@ public class EventoServiceImpl implements EventoService{
 
     @Override
     public List<Evento> obtenerTodos() {
-        return List.of();
+        return eventoDAO.findAll();
     }
 
     @Override
