@@ -44,7 +44,9 @@ public class EventoServiceImpl implements EventoService{
 
     @Override
     public Evento modificarPorId(String id, Evento evento) {
-        return null;
+        Evento eventoExistente = this.obtenerPorId(id);
+        eventoMapper.actualizarEvento(evento, eventoExistente);
+        return eventoDAO.save(eventoExistente);
     }
 
     @Override
