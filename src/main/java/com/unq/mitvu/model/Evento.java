@@ -20,7 +20,7 @@ public class Evento {
     private String descripcion;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime fecha;
-    private String idComision; // Si es null, es un evento GLOBAL
-    private String creadoPorId; // ID del Tutor o Admin que lo creó
+    private String idComision;
+    private String creadoPorId;
     private boolean esGlobal;
 }
