@@ -11,5 +11,5 @@ import java.util.List;
 public interface EventoDAO extends MongoRepository<Evento, String> {
 
     @Query("{ $or: [ { 'idComision': ?0 }, { 'esGlobal': true } ] }")
-    List<Evento> findByComisionOCentral(String idComision);
+    List<Evento> findByComisionOGlobal(String idComision);
 }
