@@ -1,13 +1,18 @@
 package com.unq.mitvu.service;
 
 import com.unq.mitvu.dao.EventoDAO;
+import com.unq.mitvu.mapper.EventoMapper;
 import com.unq.mitvu.model.Evento;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class EventoServiceImpl implements EventoService{
+
+    @Autowired
+    private EventoMapper eventoMapper;
 
     private EventoDAO eventoDAO;
 
