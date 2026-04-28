@@ -17,7 +17,7 @@ public class EventoServiceImpl implements EventoService{
 
     @Override
     public Evento crear(Evento evento) {
-        return null;
+        return eventoDAO.save(evento);
     }
 
     @Override
