@@ -1,6 +1,7 @@
 package com.unq.mitvu.controller;
 
 import com.unq.mitvu.controller.body.EventoBodyDTO;
+import com.unq.mitvu.controller.dto.EventoDTO;
 import com.unq.mitvu.mapper.EventoMapper;
 import com.unq.mitvu.model.Evento;
 import com.unq.mitvu.model.Usuario;
@@ -23,13 +24,13 @@ public class EventoController {
     private EventoMapper eventoMapper;
 
     @PostMapping
-    public ResponseEntity<Evento> crearEventoAdmin(@Valid @RequestBody EventoBodyDTO eventoBodyDTO) {
+    public ResponseEntity<EventoDTO> crearEventoAdmin(@Valid @RequestBody EventoBodyDTO eventoBodyDTO) {
         Evento evento = eventoMapper.aEvento(eventoBodyDTO);
         evento.setEsGlobal(true);
         evento.setIdComision(null);
         evento.setCreadoPorId(null);
         Evento nuevoEvento = eventoService.crear(evento);
-        return new ResponseEntity<>(nuevoEvento, HttpStatus.CREATED);
+        return new ResponseEntity<>(eventoMapper.aEventoDTO(nuevoEvento), HttpStatus.CREATED);
     }
 
     @GetMapping
