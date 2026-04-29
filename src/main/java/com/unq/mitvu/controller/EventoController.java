@@ -25,6 +25,9 @@ public class EventoController {
     @PostMapping
     public ResponseEntity<Evento> crearEventoAdmin(@Valid @RequestBody EventoBodyDTO eventoBodyDTO) {
         Evento evento = eventoMapper.aEvento(eventoBodyDTO);
+        evento.setEsGlobal(true);
+        evento.setIdComision(null);
+        evento.setCreadoPorId(null);
         Evento nuevoEvento = eventoService.crear(evento);
         return new ResponseEntity<>(nuevoEvento, HttpStatus.CREATED);
     }
