@@ -3,6 +3,7 @@ package com.unq.mitvu.controller;
 import com.unq.mitvu.controller.body.EventoBodyDTO;
 import com.unq.mitvu.mapper.EventoMapper;
 import com.unq.mitvu.model.Evento;
+import com.unq.mitvu.model.Usuario;
 import com.unq.mitvu.service.EventoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class EventoController {
     public ResponseEntity<Evento> crearEventoAdmin(@Valid @RequestBody EventoBodyDTO eventoBodyDTO) {
 
         Evento evento = eventoMapper.aEvento(eventoBodyDTO);
-        Evento nuevoEvento = eventoService.crearParaCalendario(evento);
+        Evento nuevoEvento = eventoService.crearParaCalendario(evento, new Usuario());
         return new ResponseEntity<>(nuevoEvento, HttpStatus.CREATED);
     }
 
