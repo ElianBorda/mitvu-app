@@ -4,7 +4,6 @@ import com.unq.mitvu.controller.body.EventoBodyDTO;
 import com.unq.mitvu.controller.dto.EventoDTO;
 import com.unq.mitvu.mapper.EventoMapper;
 import com.unq.mitvu.model.Evento;
-import com.unq.mitvu.model.Usuario;
 import com.unq.mitvu.service.EventoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
