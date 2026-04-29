@@ -34,9 +34,9 @@ public class EventoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Evento>> obtenerEventos() {
+    public ResponseEntity<List<EventoDTO>> obtenerEventos() {
         List<Evento> eventos = eventoService.obtenerTodos();
-        return new ResponseEntity<>(eventos, HttpStatus.OK);
+        return new ResponseEntity<>(eventoMapper.aListaDeEventoDTO(eventos), HttpStatus.OK);
     }
 
     @DeleteMapping
