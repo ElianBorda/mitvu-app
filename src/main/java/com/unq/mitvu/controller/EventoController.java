@@ -35,4 +35,9 @@ public class EventoController {
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
 
+    @DeleteMapping
+    public ResponseEntity<Void> eliminarEventos() {
+        eventoService.eliminarTodo();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
