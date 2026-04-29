@@ -3,10 +3,8 @@ package com.unq.mitvu.service;
 import com.unq.mitvu.dao.EventoDAO;
 import com.unq.mitvu.dao.TutorDAO;
 import com.unq.mitvu.mapper.EventoMapper;
-import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Evento;
 import com.unq.mitvu.model.Rol;
-import com.unq.mitvu.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +34,7 @@ public class EventoServiceImpl implements EventoService{
     }
 
     @Override
-    public Evento crearParaCalendario(Evento evento, Usuario usuario) {
+    public Evento crearParaCalendario(Evento evento) {
         evento.setCreadoPorId(usuario.getId());
         if (usuario.getRol() == Rol.ADMIN) {
             if (evento.getIdComision() == null || evento.getIdComision().isEmpty()) {
