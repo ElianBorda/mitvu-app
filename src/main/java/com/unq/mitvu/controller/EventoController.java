@@ -24,9 +24,11 @@ public class EventoController {
     private EventoMapper eventoMapper;
 
     @PostMapping
-    public ResponseEntity<Evento> crearEvento(@Valid @RequestBody EventoBodyDTO eventoBodyDTO) {
+    public ResponseEntity<Evento> crearEventoAdmin(@Valid @RequestBody EventoBodyDTO eventoBodyDTO) {
 
-        return new ResponseEntity<>(new Evento(), HttpStatus.CREATED);
+        Evento evento = eventoMapper.aEvento(eventoBodyDTO);
+        Evento nuevoEvento = eventoService.crearParaCalendario(evento, new Usuario());
+        return new ResponseEntity<>(nuevoEvento, HttpStatus.CREATED);
     }
 
 }
