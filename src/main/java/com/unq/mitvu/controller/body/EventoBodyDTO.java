@@ -13,7 +13,7 @@ public class EventoBodyDTO {
     @NotBlank(message = "El título es obligatorio")
     private String titulo;
     private String descripcion;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @NotNull(message = "La fecha es obligatoria")
     private LocalDate fecha;
     private String idComision;

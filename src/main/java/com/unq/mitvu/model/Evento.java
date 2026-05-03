@@ -18,7 +18,7 @@ public class Evento {
     private String id;
     private String titulo;
     private String descripcion;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate fecha;
     private String idComision;
     private String creadoPorId;

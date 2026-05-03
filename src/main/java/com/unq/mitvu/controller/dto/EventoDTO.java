@@ -8,8 +8,10 @@ import java.time.LocalDateTime;
 
 @Data
 public class EventoDTO {
+
+    private String id;
     private String titulo;
     private String descripcion;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate fecha;
 }
