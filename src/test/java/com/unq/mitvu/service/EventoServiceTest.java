@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +34,7 @@ class EventoServiceTest {
         eventoPrueba = new Evento();
         eventoPrueba.setTitulo("Tutoría de Programación");
         eventoPrueba.setDescripcion("Repaso para el parcial");
-        eventoPrueba.setFecha(LocalDateTime.of(2026, 4, 28, 15, 30));
+        eventoPrueba.setFecha(LocalDate.of(2026, 4, 28));
     }
 
     @AfterEach
