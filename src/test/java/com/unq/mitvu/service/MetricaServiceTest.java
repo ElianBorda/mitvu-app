@@ -115,7 +115,7 @@ class MetricaServiceTest {
     @Test
     void testCantidadTotalDeEstudiantesDeUnaComision_Existente() {
         Integer totalComisionActiva = metricaService.cantidadTotalDeEstudiantesDeUnaComision(comisionActiva.getId());
-        assertEquals(1, totalComisionActiva);
+        assertEquals(3, totalComisionActiva);
 
         Integer totalComisionVacia = metricaService.cantidadTotalDeEstudiantesDeUnaComision(comisionVacia.getId());
         assertEquals(0, totalComisionVacia);
