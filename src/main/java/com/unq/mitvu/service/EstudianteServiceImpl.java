@@ -65,8 +65,8 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     @Override
     public void eliminarPorId(String id) {
-        this.obtenerPorId(id);
-        estudianteDAO.deleteById(id);
+        Estudiante estudiante = this.obtenerPorId(id);
+        estudianteDAO.deleteById(estudiante.getId());
     }
 
     @Override

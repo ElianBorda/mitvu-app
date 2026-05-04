@@ -115,7 +115,7 @@ public class EstudianteController {
         return ResponseEntity.ok(estudiantesDetalle);
     }
 
-    @GetMapping("comision/{idComision}/baja")
+    @GetMapping("/comision/{idComision}/baja")
     public ResponseEntity<List<EstudianteResumenDTO>> obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(@PathVariable String idComision){
         List<Estudiante> estudiantes = estudianteService.obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(idComision);
         return ResponseEntity.ok(estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes));

@@ -60,11 +60,12 @@ public class TutorServiceImpl implements TutorService {
 
     @Override
     public void eliminarPorId(String id) {
+        this.obtenerPorId(id);
+
         List<Comision> comisiones = comisionDAO.findByTutorId(id);
         comisiones.forEach(comision -> comision.setTutor(null));
         comisionDAO.saveAll(comisiones);
 
-        this.obtenerPorId(id);
         tutorDAO.deleteById(id);
     }
 
