@@ -51,7 +51,7 @@ public class TutorController {
     @GetMapping("/{id}")
     public ResponseEntity<TutorDetalleDTO> obtenerTutor(@PathVariable String id){
         Tutor tutor = tutorService.obtenerPorId(id);
-        return this.getTutorDetalleDTOResponseEntity(tutor);
+        return getTutorDetalleDTOResponseEntity(tutor);
     }
 
     @PostMapping
@@ -73,6 +73,26 @@ public class TutorController {
     public ResponseEntity<Void> eliminarTutor(@PathVariable String id) {
         tutorService.eliminarPorId(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TutorDetalleDTO> actualizarTutor(@RequestBody @Valid TutorBodyDTO tutorBodyDTO, @PathVariable String id) {
+        Tutor tutor = tutorMapper.aTutor(tutorBodyDTO);
+        Tutor tutorModificado = tutorService.modificarPorId(id, tutor);
+        List<String> comisionesNuevasIDs = tutorBodyDTO.getComisiones_ids();
+        List<Comision> comisiones = comisionService.obtenerComisionesDeTutor(id);
+        List<String> comisionesIDs = comisiones.stream().map(Comision::getId).collect(Collectors.toList());
+        comisionesIDs.stream().forEach(comisionId -> {
+            if (!comisionesNuevasIDs.contains(comisionId)){
+                comisionService.eliminarTutorDeComision(comisionId);
+            }
+        });
+        comisionesNuevasIDs.stream().forEach(comisionId -> {
+            if (!comisionesIDs.contains(comisionId)) {
+                comisionService.agregarTutorAComision(id, comisionId);
+            }
+        });
+        return getTutorDetalleDTOResponseEntity(tutorModificado);
     }
 
     @PutMapping({"/asignarComisionesATutor/{idTutor}"})
