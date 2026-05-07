@@ -1,7 +1,6 @@
 package com.unq.mitvu.controller.body;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -27,6 +26,4 @@ public class ComisionBodyDTO {
     @Pattern(regexp = "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", message = "Formato de hora inválido (HH:mm)")
     private String horarioFin;
 
-    @NotNull(message = "El día hábil es obligatorio")
-    private String diaHabil;
 }
