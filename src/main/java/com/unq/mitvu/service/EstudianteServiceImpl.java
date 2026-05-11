@@ -1,20 +1,19 @@
 package com.unq.mitvu.service;
 
+import ch.qos.logback.core.spi.BasicSequenceNumberGenerator;
 import com.unq.mitvu.dao.ComisionDAO;
 import com.unq.mitvu.dao.EstudianteDAO;
 import com.unq.mitvu.dao.TutorDAO;
 import com.unq.mitvu.exceptions.RecursoNoEncontradoException;
 import com.unq.mitvu.exceptions.ReglaDeNegocioException;
 import com.unq.mitvu.mapper.EstudianteMapper;
-import com.unq.mitvu.model.Comision;
-import com.unq.mitvu.model.Estudiante;
-import com.unq.mitvu.model.FormularioBaja;
-import com.unq.mitvu.model.Rol;
+import com.unq.mitvu.model.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -194,5 +193,15 @@ public class EstudianteServiceImpl implements EstudianteService {
     public boolean estaDadoDeBaja(String idEstudiante) {
         Estudiante estudiante = this.obtenerPorId(idEstudiante);
         return !estudiante.estaActivo();
+    }
+
+    @Override
+    public Estudiante pasarAsistenciaDeEstudiante(String idEstudiante, Asistencia asistencia) {
+        Estudiante estudiante = this.obtenerPorId(idEstudiante);
+
+        estudiante.getAsistencias().removeIf(a -> a.getFecha().equals(asistencia.getFecha()));
+        estudiante.getAsistencias().add(asistencia);
+
+        return estudianteDAO.save(estudiante);
     }
 }
