@@ -2,6 +2,7 @@ package com.unq.mitvu.controller;
 
 import com.unq.mitvu.controller.body.BajaEstudianteBodyDTO;
 import com.unq.mitvu.controller.body.EstudianteBodyDTO;
+import com.unq.mitvu.controller.dto.AsistenciaDTO;
 import com.unq.mitvu.controller.dto.detalle.EstudianteDetalleDTO;
 import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
 import com.unq.mitvu.mapper.ComisionMapper;
@@ -13,7 +14,6 @@ import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.EstudianteService;
 import com.unq.mitvu.service.TutorService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -93,6 +93,12 @@ public class EstudianteController {
     @PutMapping("/{idEstudiante}/baja")
     public ResponseEntity<EstudianteDetalleDTO> darDeBajaAEstudianteDeComision(@PathVariable String idEstudiante, @Valid @RequestBody BajaEstudianteBodyDTO bajaEstudianteBodyDTO){
         Estudiante estudiante = estudianteService.darseDeBaja(idEstudiante, estudianteMapper.aFormularioBaja(bajaEstudianteBodyDTO));
+        return getEstudianteDetalleDTOResponseEntity(estudiante);
+    }
+
+    @PutMapping("/{idEstudiante}/pasarAsistencia")
+    public ResponseEntity<EstudianteDetalleDTO> pasarAsistenciaDeEstudiante(@PathVariable String idEstudiante, @Valid @RequestBody AsistenciaDTO asistenciaDTO) {
+        Estudiante estudiante = estudianteService.pasarAsistenciaDeEstudiante(idEstudiante, asistenciaDTO.aAsistenciaModelo());
         return getEstudianteDetalleDTOResponseEntity(estudiante);
     }
 

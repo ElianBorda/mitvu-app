@@ -1,5 +1,6 @@
 package com.unq.mitvu.service;
 
+import com.unq.mitvu.model.Asistencia;
 import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.model.FormularioBaja;
 
@@ -26,4 +27,5 @@ public interface EstudianteService {
     List<Estudiante> obtenerEstudiantesDeBaja();
     List<Estudiante> obtenerEstudiantesActivos();
     boolean estaDadoDeBaja(String idEstudiante);
+    Estudiante pasarAsistenciaDeEstudiante(String idEstudiante, Asistencia asistencia);
 }
