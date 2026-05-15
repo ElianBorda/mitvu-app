@@ -33,6 +33,14 @@ public class EventoController {
         return new ResponseEntity<>(eventoMapper.aEventoDTO(nuevoEvento), HttpStatus.CREATED);
     }
 
+    @PostMapping("/comision")
+    public ResponseEntity<EventoDTO> crearEventoParaComision(@Valid @RequestBody EventoBodyDTO eventoBodyDTO){
+        Evento evento = eventoMapper.aEvento(eventoBodyDTO);
+        evento.setEsGlobal(false);
+        Evento nuevoEvento = eventoService.crear(evento);
+        return new ResponseEntity<>(eventoMapper.aEventoDTO(nuevoEvento), HttpStatus.CREATED);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<EventoDTO> modificarEvento(@Valid @RequestBody EventoBodyDTO eventoBodyDTO, @PathVariable String id){
         Evento unEventoParaActualizar = eventoMapper.aEvento(eventoBodyDTO);
