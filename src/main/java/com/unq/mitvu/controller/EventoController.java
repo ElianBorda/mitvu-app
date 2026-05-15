@@ -41,6 +41,7 @@ public class EventoController {
         return new ResponseEntity<>(eventoMapper.aEventoDTO(nuevoEvento), HttpStatus.CREATED);
     }
 
+
     @PutMapping("/{id}")
     public ResponseEntity<EventoDTO> modificarEvento(@Valid @RequestBody EventoBodyDTO eventoBodyDTO, @PathVariable String id){
         Evento unEventoParaActualizar = eventoMapper.aEvento(eventoBodyDTO);
@@ -55,8 +56,14 @@ public class EventoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventoDTO>> obtenerEventos() {
-        List<Evento> eventos = eventoService.obtenerTodos();
+    public ResponseEntity<List<EventoDTO>> obtenerEventosGlobales() {
+        List<Evento> eventos = eventoService.obtenerTodosLosEventosGlobales();
+        return new ResponseEntity<>(eventoMapper.aListaDeEventoDTO(eventos), HttpStatus.OK);
+    }
+
+    @GetMapping("/comision/{id}")
+    public ResponseEntity<List<EventoDTO>> obtenerEventosDeUnaComision(@PathVariable String id){
+        List<Evento> eventos = eventoService.obtenerTodosLosEventosParaComision(id);
         return new ResponseEntity<>(eventoMapper.aListaDeEventoDTO(eventos), HttpStatus.OK);
     }
 
