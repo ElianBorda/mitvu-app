@@ -64,6 +64,16 @@ public class EventoServiceImpl implements EventoService{
     }
 
     @Override
+    public List<Evento> obtenerTodosLosEventosGlobales() {
+        return eventoDAO.findByEsGlobalTrue();
+    }
+
+    @Override
+    public List<Evento> obtenerTodosLosEventosParaComision(String idComision) {
+        return eventoDAO.findByEsGlobalTrueOrIdComision(idComision);
+    }
+
+    @Override
     public Evento modificarPorId(String id, Evento evento) {
         Evento eventoExistente = this.obtenerPorId(id);
         eventoMapper.actualizarEvento(evento, eventoExistente);
