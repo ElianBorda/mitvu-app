@@ -64,7 +64,7 @@ public class MetricaController {
 
     @GetMapping("/asistencia/comision/{id}")
     public ResponseEntity<List<MetricaAsistenciaDTO>> obtenerMetricasDeAsistenciaParaComision(@PathVariable String id){
-        List<Evento> eventos = eventoService.obtenerTodosLosEventosParaComision(id);
+        List<Evento> eventos = eventoService.obtenerTodosLosEventosGlobales();
         List<MetricaAsistenciaDTO> metricaAsistenciaDTOS = new ArrayList<>();
         for (Evento evento : eventos){
             metricaAsistenciaDTOS.add(
