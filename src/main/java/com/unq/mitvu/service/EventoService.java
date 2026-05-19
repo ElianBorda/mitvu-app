@@ -13,6 +13,8 @@ public interface EventoService {
     Evento crearParaCalendario(Evento evento, Usuario usuario);
     Evento obtenerPorId(String id);
     List<Evento> obtenerTodos();
+    List<Evento> obtenerTodosLosEventosGlobales();
+    List<Evento> obtenerTodosLosEventosParaComision(String idComision);
     Evento modificarPorId(String id, Evento evento);
     void eliminarPorId(String id);
     void eliminarTodo();

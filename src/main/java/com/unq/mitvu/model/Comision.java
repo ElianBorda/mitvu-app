@@ -22,7 +22,6 @@ public class Comision {
     private String aula;
     private Horario horarioInicio;
     private Horario horarioFin;
-    private DiaHabil diaHabil;
     private Turno turno;
 
     @DocumentReference(lazy = true)
@@ -35,7 +34,6 @@ public class Comision {
         this.aula = aula;
         this.horarioInicio = horarioInicio;
         this.horarioFin = horarioFin;
-        this.diaHabil = diaHabil;
         this.turno = horarioInicio.definirTurnoConHorarioFinal(horarioFin);
     }
 }

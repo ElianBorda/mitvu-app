@@ -12,4 +12,8 @@ public interface EventoDAO extends MongoRepository<Evento, String> {
 
     @Query("{ $or: [ { 'idComision': ?0 }, { 'esGlobal': true } ] }")
     List<Evento> findByComisionOGlobal(String idComision);
+
+    List<Evento> findByEsGlobalTrue();
+
+    List<Evento> findByEsGlobalTrueOrIdComision(String idComision);
 }
