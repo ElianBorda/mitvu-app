@@ -21,14 +21,110 @@ public class EmailServiceImpl implements EmailService{
 
             helper.setFrom("eliancamiloalejandro@gmail.com");
             helper.setTo("eliancamiloalejandro@gmail.com");
-            helper.setSubject("Aviso: Límite de Faltas en tutoria");
+            helper.setSubject("⚠️ Aviso de faltas — Taller de Vida Universitaria");
 
             String htmlContent = """
-                <div style="font-family: Arial;">
-                    <h2>Aviso de Estado de Cursada</h2>
-                    <p>Hola <strong>%s</strong>, tienes <strong>%d faltas</strong> en <em>tutorias</em>.</p>
-                </div>
-                """.formatted(nombreEstudiante, cantidadDeFaltas);
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: 'Segoe UI', Arial, sans-serif;">
+
+                <table width="100%%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 0;">
+                    <tr>
+                        <td align="center">
+                            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+
+                                <!-- HEADER -->
+                                <tr>
+                                    <td style="background-color: #7B0D1E; padding: 32px 40px; text-align: center;">
+                                        <p style="margin: 0; color: #ffffff; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; font-weight: 300;">
+                                            Universidad Nacional de Quilmes
+                                        </p>
+                                        <h1 style="margin: 8px 0 0 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px;">
+                                            mi<span style="font-style: italic; font-weight: 300;">TVU</span>
+                                        </h1>
+                                        <p style="margin: 6px 0 0 0; color: rgba(255,255,255,0.75); font-size: 12px; font-weight: 300;">
+                                            Taller de Vida Universitaria
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <!-- ALERTA -->
+                                <tr>
+                                    <td style="background-color: #fdf2f4; border-bottom: 3px solid #7B0D1E; padding: 16px 40px; text-align: center;">
+                                        <p style="margin: 0; color: #7B0D1E; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">
+                                            ⚠️ &nbsp; AVISO DE ESTADO DE CURSADA
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <!-- CUERPO -->
+                                <tr>
+                                    <td style="padding: 40px 40px 32px 40px;">
+                                        <p style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 16px;">
+                                            Hola, <strong style="color: #7B0D1E;">%s</strong>
+                                        </p>
+                                        <p style="margin: 0 0 24px 0; color: #444444; font-size: 15px; line-height: 1.6;">
+                                            Te informamos que registrás actualmente
+                                            <strong style="color: #1a1a1a;">%d %s</strong>
+                                            en el <strong>Taller de Vida Universitaria</strong>.
+                                        </p>
+
+                                        <!-- CARD DE FALTAS -->
+                                        <table width="100%%" cellpadding="0" cellspacing="0" style="background-color: #fdf2f4; border-radius: 8px; border-left: 4px solid #7B0D1E; margin-bottom: 24px;">
+                                            <tr>
+                                                <td style="padding: 20px 24px;">
+                                                    <p style="margin: 0 0 4px 0; color: #7B0D1E; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                                                        Faltas registradas
+                                                    </p>
+                                                    <p style="margin: 0; color: #7B0D1E; font-size: 36px; font-weight: 700;">
+                                                        %d
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <p style="margin: 0 0 8px 0; color: #444444; font-size: 14px; line-height: 1.6;">
+                                            Recordá que superar el límite de faltas permitido puede comprometer tu continuidad en el taller.
+                                            Si considerás que existe un error o querés regularizar tu situación, comunicate con tu tutor/a a la brevedad.
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <!-- DIVIDER -->
+                                <tr>
+                                    <td style="padding: 0 40px;">
+                                        <hr style="border: none; border-top: 1px solid #eeeeee; margin: 0;">
+                                    </td>
+                                </tr>
+
+                                <!-- FOOTER -->
+                                <tr>
+                                    <td style="padding: 24px 40px; text-align: center;">
+                                        <p style="margin: 0 0 4px 0; color: #999999; font-size: 12px;">
+                                            Este es un mensaje automático generado por <strong>miTVU</strong>.
+                                        </p>
+                                        <p style="margin: 0; color: #bbbbbb; font-size: 11px;">
+                                            Universidad Nacional de Quilmes · Taller de Vida Universitaria
+                                        </p>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </body>
+            </html>
+            """.formatted(
+                    nombreEstudiante,
+                    cantidadDeFaltas, cantidadDeFaltas == 1 ? "falta" : "faltas",
+                    cantidadDeFaltas
+            );
 
             helper.setText(htmlContent, true);
             mailSender.send(mensaje);
