@@ -72,7 +72,7 @@ class AnuncioControllerTest {
         List<Anuncio> anunciosMock = List.of(anuncioMock);
         List<AnuncioDTO> listaDtoMock = List.of(anuncioDTOMock);
 
-        when(anuncioService.obtenerTodos()).thenReturn(anunciosMock);
+        when(anuncioService.obtenerTodosLosPublicos()).thenReturn(anunciosMock);
         when(anuncioMapper.aListaDeAnuncioDTO(anunciosMock)).thenReturn(listaDtoMock);
 
         mockMvc.perform(get("/api/anuncios")
