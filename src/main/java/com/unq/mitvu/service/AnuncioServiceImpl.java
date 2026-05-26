@@ -45,7 +45,19 @@ public class AnuncioServiceImpl implements  AnuncioService {
     }
 
     @Override
-    public List<Anuncio> obtenerTodos() {
-        return anuncioDAO.findAll();
+    public List<Anuncio> obtenerTodosLosPublicos() {
+
+        return anuncioDAO.findByidComisionIsNull();
+
+    }
+
+    @Override
+    public List<Anuncio> obtenerAnunciosDeComision(String idComision) {
+
+        comisionDAO.findById(idComision).orElseThrow(
+                () -> new ReglaDeNegocioException("No se puede asignar el evento a la COMISIÓN con id: " + idComision + " porque no existe")
+        );
+
+        return anuncioDAO.findByidComision(idComision);
     }
 }

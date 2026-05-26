@@ -32,8 +32,14 @@ public class AnuncioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AnuncioDTO>> obtenerTodos() {
-        List<Anuncio> anuncios = anuncioService.obtenerTodos();
+    public ResponseEntity<List<AnuncioDTO>> obtenerTodosLosPublicos() {
+        List<Anuncio> anuncios = anuncioService.obtenerTodosLosPublicos();
+        return new ResponseEntity<>(anuncioMapper.aListaDeAnuncioDTO(anuncios),  HttpStatus.OK);
+    }
+
+    @GetMapping("/comision/{idComision}")
+    public ResponseEntity<List<AnuncioDTO>> obtenerAnunciosDeComision(@PathVariable String idComision) {
+        List<Anuncio> anuncios = anuncioService.obtenerAnunciosDeComision(idComision);
         return new ResponseEntity<>(anuncioMapper.aListaDeAnuncioDTO(anuncios),  HttpStatus.OK);
     }
 
