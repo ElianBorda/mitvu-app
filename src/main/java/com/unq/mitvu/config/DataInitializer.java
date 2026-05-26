@@ -7,6 +7,7 @@ import com.unq.mitvu.service.EventoService;
 import com.unq.mitvu.service.TutorService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -20,6 +21,7 @@ import static com.unq.mitvu.model.DiaHabil.JUEVES;
 import static com.unq.mitvu.model.DiaHabil.VIERNES;
 
 @Component
+@Profile({"dev", "test"})
 public class DataInitializer implements ApplicationRunner {
 
     private final ComisionService comisionService;
