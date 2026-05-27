@@ -81,4 +81,52 @@ class AnuncioControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));
     }
+
+    // - CASOS NEGATIVOS
+
+    @Test
+    void crearAnuncio_SinTitulo_DeberiaRetornar400() throws Exception {
+        AnuncioBodyDTO bodyDTO = new AnuncioBodyDTO();
+        bodyDTO.setDescripcion("Descripción sin título");
+        String jsonBody = objectMapper.writeValueAsString(bodyDTO);
+
+        mockMvc.perform(post("/api/anuncios")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearAnuncio_ConComisionInexistente_DeberiaRetornar400() throws Exception {
+        AnuncioBodyDTO bodyDTO = new AnuncioBodyDTO();
+        bodyDTO.setTitulo("Título válido");
+        bodyDTO.setIdComision("comision-inexistente");
+        String jsonBody = objectMapper.writeValueAsString(bodyDTO);
+
+        when(anuncioMapper.aAnuncio(any(AnuncioBodyDTO.class))).thenReturn(anuncioMock);
+        when(anuncioService.crear(any(Anuncio.class)))
+                .thenThrow(new com.unq.mitvu.exceptions.ReglaDeNegocioException("No se puede asignar el anuncio a la COMISIÓN porque no existe."));
+
+        mockMvc.perform(post("/api/anuncios")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearAnuncio_ConTutorInexistente_DeberiaRetornar400() throws Exception {
+        AnuncioBodyDTO bodyDTO = new AnuncioBodyDTO();
+        bodyDTO.setTitulo("Título válido");
+        bodyDTO.setCreadoPorId("tutor-inexistente");
+        String jsonBody = objectMapper.writeValueAsString(bodyDTO);
+
+        when(anuncioMapper.aAnuncio(any(AnuncioBodyDTO.class))).thenReturn(anuncioMock);
+        when(anuncioService.crear(any(Anuncio.class)))
+                .thenThrow(new com.unq.mitvu.exceptions.ReglaDeNegocioException("No se puede asignar como creador al tutor porque no existe."));
+
+        mockMvc.perform(post("/api/anuncios")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
 }

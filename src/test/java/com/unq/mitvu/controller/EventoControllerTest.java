@@ -139,4 +139,56 @@ class EventoControllerTest {
         mockMvc.perform(delete("/api/eventos"))
                 .andExpect(status().isNoContent());
     }
+
+    // - CASOS NEGATIVOS
+
+    @Test
+    void crearEvento_SinTitulo_DeberiaRetornar400() throws Exception {
+        EventoBodyDTO bodyVacio = new EventoBodyDTO();
+        bodyVacio.setFecha(LocalDate.now());
+        String jsonBody = objectMapper.writeValueAsString(bodyVacio);
+
+        mockMvc.perform(post("/api/eventos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearEvento_ConComisionInexistente_DeberiaRetornar400() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(eventoBodyDTO);
+
+        when(eventoMapper.aEvento(any(EventoBodyDTO.class))).thenReturn(eventoMock);
+        when(eventoService.crear(any(Evento.class)))
+                .thenThrow(new com.unq.mitvu.exceptions.ReglaDeNegocioException("No se puede asignar el evento a la COMISIÓN porque no existe."));
+
+        mockMvc.perform(post("/api/eventos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void modificarEvento_CuandoNoExiste_DeberiaRetornar404() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(eventoBodyDTO);
+
+        when(eventoMapper.aEvento(any(EventoBodyDTO.class))).thenReturn(eventoMock);
+        when(eventoService.modificarPorId(anyString(), any(Evento.class)))
+                .thenThrow(new com.unq.mitvu.exceptions.RecursoNoEncontradoException("999", "No se encontró el EVENTO con id: 999"));
+
+        mockMvc.perform(put("/api/eventos/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void obtenerEventosDeUnaComision_CuandoComisionNoExiste_DeberiaRetornar404() throws Exception {
+        when(eventoService.obtenerTodosLosEventosParaComision(anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.RecursoNoEncontradoException("999", "No se encontró la COMISIÓN con id: 999"));
+
+        mockMvc.perform(get("/api/eventos/comision/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }

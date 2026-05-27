@@ -1,6 +1,7 @@
 package com.unq.mitvu.controller;
 
 import com.unq.mitvu.controller.body.BajaEstudianteBodyDTO;
+import com.unq.mitvu.controller.body.ComisionBodyDTO;
 import com.unq.mitvu.controller.body.EstudianteBodyDTO;
 import com.unq.mitvu.controller.dto.AsistenciaDTO;
 import com.unq.mitvu.controller.dto.detalle.EstudianteDetalleDTO;
@@ -246,5 +247,92 @@ class EstudianteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
+    }
+
+    // - CASOS NEGATIVOS
+
+    @Test
+    void crearEstudiante_SinCamposObligatorios_DeberiaRetornar400() throws Exception {
+        // Body vacío — todos los @NotBlank deben fallar
+        EstudianteBodyDTO bodyVacio = new EstudianteBodyDTO();
+        String jsonBody = objectMapper.writeValueAsString(bodyVacio);
+
+        mockMvc.perform(post("/api/estudiantes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearEstudiante_ConMailInvalido_DeberiaRetornar400() throws Exception {
+        EstudianteBodyDTO bodyMailInvalido = new EstudianteBodyDTO();
+        bodyMailInvalido.setNombre("Juan");
+        bodyMailInvalido.setApellido("Gomez");
+        bodyMailInvalido.setDni("12345678");
+        bodyMailInvalido.setMail("esto-no-es-un-mail");  // @Email debe fallar
+        bodyMailInvalido.setCarrera("TPI");
+        String jsonBody = objectMapper.writeValueAsString(bodyMailInvalido);
+
+        mockMvc.perform(post("/api/estudiantes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void obtenerEstudiante_CuandoNoExiste_DeberiaRetornar404() throws Exception {
+        when(estudianteService.obtenerPorId(anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.RecursoNoEncontradoException("999", "No se encontró el ESTUDIANTE con id: 999"));
+
+        mockMvc.perform(get("/api/estudiantes/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void darDeBajaAEstudiante_CuandoYaEstaDadoDeBaja_DeberiaRetornar400() throws Exception {
+        bajaEstudianteBodyDTO.setMotivo(MotivoBaja.OTRO);
+        bajaEstudianteBodyDTO.setDetalle("Detalles de prueba");
+        String jsonBody = objectMapper.writeValueAsString(bajaEstudianteBodyDTO);
+
+        when(estudianteMapper.aFormularioBaja(any(BajaEstudianteBodyDTO.class))).thenReturn(null);
+        when(estudianteService.darseDeBaja(anyString(), any()))
+                .thenThrow(new com.unq.mitvu.exceptions.ReglaDeNegocioException("El estudiante ya se encuentra dado de baja."));
+
+        mockMvc.perform(put("/api/estudiantes/123/baja")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void asignarComision_CuandoEstudianteEstaEnBaja_DeberiaRetornar400() throws Exception {
+        when(estudianteService.agregarEstudianteAComision(anyString(), anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.ReglaDeNegocioException("No se puede asignar una comisión al ESTUDIANTE porque se encuentra dado de baja."));
+
+        mockMvc.perform(put("/api/estudiantes/123/asignarComision/comision1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void asignarComision_CuandoEstudianteYaTieneUna_DeberiaRetornar400() throws Exception {
+        when(estudianteService.agregarEstudianteAComision(anyString(), anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.ReglaDeNegocioException("El ESTUDIANTE ya se encuentra en una COMISION."));
+
+        mockMvc.perform(put("/api/estudiantes/123/asignarComision/comision1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void pasarAsistencia_ConBodyVacio_DeberiaRetornar400() throws Exception {
+        AsistenciaDTO bodyVacio = new AsistenciaDTO();
+        String jsonBody = objectMapper.writeValueAsString(bodyVacio);
+
+        mockMvc.perform(put("/api/estudiantes/123/pasarAsistencia")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
     }
 }

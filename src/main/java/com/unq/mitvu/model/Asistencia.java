@@ -1,6 +1,7 @@
 package com.unq.mitvu.model;
 
 import com.unq.mitvu.controller.dto.AsistenciaDTO;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -9,11 +10,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class Asistencia {
-    @NonNull private LocalDate fecha;
-    @NonNull private TipoDeAsistencia tipoDeAsistencia;
+    private LocalDate fecha;
+    private TipoDeAsistencia tipoDeAsistencia;
     private String observacion;
-
-    public Asistencia() {}
 
     public Asistencia(LocalDate fecha, TipoDeAsistencia asistio, String observacion) {
         this.fecha = fecha;

@@ -152,4 +152,52 @@ class ComisionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("123"));
     }
+
+    // - CASOS NEGATIVOS
+
+    @Test
+    void crearComision_SinCamposObligatorios_DeberiaRetornar400() throws Exception {
+        ComisionBodyDTO bodyVacio = new ComisionBodyDTO();
+        String jsonBody = objectMapper.writeValueAsString(bodyVacio);
+
+        mockMvc.perform(post("/api/comisiones")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearComision_ConFormatoDeHorarioInvalido_DeberiaRetornar400() throws Exception {
+        ComisionBodyDTO bodyHorarioInvalido = new ComisionBodyDTO();
+        bodyHorarioInvalido.setLocalidad("Quilmes");
+        bodyHorarioInvalido.setDepartamento("Informatica");
+        bodyHorarioInvalido.setHorarioInicio("25:99");
+        bodyHorarioInvalido.setHorarioFin("8am");
+        String jsonBody = objectMapper.writeValueAsString(bodyHorarioInvalido);
+
+        mockMvc.perform(post("/api/comisiones")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void obtenerComision_CuandoNoExiste_DeberiaRetornar404() throws Exception {
+        when(comisionService.obtenerPorId(anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.RecursoNoEncontradoException("999", "No se encontró la COMISIÓN con id: 999"));
+
+        mockMvc.perform(get("/api/comisiones/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void agregarTutorAComision_CuandoYaTieneUno_DeberiaRetornar400() throws Exception {
+        when(comisionService.agregarTutorAComision(anyString(), anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.ReglaDeNegocioException("La COMISION ya tiene un TUTOR asignado."));
+
+        mockMvc.perform(put("/api/comisiones/agregarTutor/tutor1/123")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

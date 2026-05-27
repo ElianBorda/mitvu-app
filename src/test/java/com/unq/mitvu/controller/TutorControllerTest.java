@@ -169,4 +169,62 @@ class TutorControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("123"));
     }
+
+    // - CASOS NEGATIVOS
+
+    @Test
+    void crearTutor_SinCamposObligatorios_DeberiaRetornar400() throws Exception {
+        TutorBodyDTO bodyVacio = new TutorBodyDTO();
+        String jsonBody = objectMapper.writeValueAsString(bodyVacio);
+
+        mockMvc.perform(post("/api/tutores")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearTutor_ConMailInvalido_DeberiaRetornar400() throws Exception {
+        TutorBodyDTO bodyMailInvalido = new TutorBodyDTO();
+        bodyMailInvalido.setNombre("Carlos");
+        bodyMailInvalido.setApellido("Lopez");
+        bodyMailInvalido.setDni("87654321");
+        bodyMailInvalido.setMail("no-es-un-mail");
+        String jsonBody = objectMapper.writeValueAsString(bodyMailInvalido);
+
+        mockMvc.perform(post("/api/tutores")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void obtenerTutor_CuandoNoExiste_DeberiaRetornar404() throws Exception {
+        when(tutorService.obtenerPorId(anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.RecursoNoEncontradoException("999", "No se encontró el TUTOR con id: 999"));
+
+        mockMvc.perform(get("/api/tutores/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void obtenerTutorDeLaComision_CuandoNoTieneTutor_DeberiaRetornar400() throws Exception {
+        when(tutorService.obtenerTutorDeLaComision(anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.ReglaDeNegocioException("La comision no tiene un tutor asignado."));
+
+        mockMvc.perform(get("/api/tutores/comision/comision1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void obtenerTutorDeLaComision_CuandoComisionNoExiste_DeberiaRetornar404() throws Exception {
+        when(tutorService.obtenerTutorDeLaComision(anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.RecursoNoEncontradoException("999", "No existe una comision con id: 999"));
+
+        mockMvc.perform(get("/api/tutores/comision/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }

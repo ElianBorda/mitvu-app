@@ -118,4 +118,39 @@ class MetricaControllerTest {
                 .andExpect(jsonPath("$[0].porcentajeFaltaJustificada").value(33))
                 .andExpect(jsonPath("$[0].evento.id").value("1"));
     }
+
+    // - CASOS NEGATIVOS
+
+    @Test
+    void obtenerMetricasDeBajaDeUnaComision_CuandoComisionNoExiste_DeberiaRetornar404() throws Exception {
+        when(metricaService.cantidadTotalDeEstudiantesDeUnaComision(anyString()))
+                .thenThrow(new com.unq.mitvu.exceptions.RecursoNoEncontradoException("999", "No se encontró la COMISION con id: 999"));
+
+        mockMvc.perform(get("/api/metricas/estudiantes/dadosDeBaja/porComision/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void obtenerMetricasDeAsistenciaGlobal_CuandoNoHayEventos_DeberiaRetornarListaVacia() throws Exception {
+        when(eventoService.obtenerTodosLosEventosGlobales()).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/metricas/asistencia")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void obtenerMetricasDeAsistenciaParaComision_CuandoComisionNoExiste_DeberiaRetornar404() throws Exception {
+        when(metricaService.porcentajeDeTipoDeAsistenciaPorComision(anyString(), anyString(), any(TipoDeAsistencia.class)))
+                .thenThrow(new com.unq.mitvu.exceptions.RecursoNoEncontradoException("999", "No se encontró la COMISION con id: 999"));
+        when(eventoService.obtenerTodosLosEventosGlobales()).thenReturn(List.of(eventoMock));
+        when(eventoMapper.aEventoDTO(any(Evento.class))).thenReturn(eventoDTOMock);
+
+        mockMvc.perform(get("/api/metricas/asistencia/comision/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }
