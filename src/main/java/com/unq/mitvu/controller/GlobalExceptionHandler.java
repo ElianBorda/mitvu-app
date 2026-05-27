@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 
@@ -41,7 +42,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> manejarErroresGlobales(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDTO> manejarErroresGlobales(Exception ex, WebRequest request) throws NoResourceFoundException {
+
+        if (ex instanceof org.springframework.web.servlet.resource.NoResourceFoundException) {
+            throw (org.springframework.web.servlet.resource.NoResourceFoundException) ex;
+        }
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
                 .mensaje("Ocurrió un error interno en el servidor: " + ex.getMessage())
