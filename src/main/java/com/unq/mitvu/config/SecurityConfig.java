@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     // Tomamos la variable de entorno, si no existe usamos localhost y tu dominio de Railway por defecto
-    @Value("${cors.allowed-origins:http://localhost:3001,https://mitvu-web-production.up.railway.app}")
+    @Value("${cors.allowed-origins:http://localhost:8080,https://mitvu-web-production.up.railway.app}")
     private String allowedOrigins;
 
     @Bean
