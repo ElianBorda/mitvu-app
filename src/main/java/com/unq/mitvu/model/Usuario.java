@@ -19,6 +19,7 @@ public class Usuario {
     protected String mail;
     protected String password;
     protected Rol rol;
+    private String fcmToken;
 
     public Usuario(String apellido, String nombre, String dni, String mail, Rol rol) {
         this.apellido = apellido;
@@ -29,6 +30,16 @@ public class Usuario {
     }
 
     public Usuario(String apellido, String nombre, String dni, String mail, String password, Rol rol) {
+        this.apellido = apellido;
+        this.nombre = nombre;
+        this.dni = dni;
+        this.mail = mail;
+        this.password = password;
+        this.rol = rol;
+    }
+
+    public Usuario(String id, String apellido, String nombre, String dni, String mail, String password, Rol rol) {
+        this.id = id;
         this.apellido = apellido;
         this.nombre = nombre;
         this.dni = dni;

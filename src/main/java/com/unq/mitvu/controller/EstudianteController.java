@@ -1,7 +1,11 @@
 package com.unq.mitvu.controller;
 
+import com.unq.mitvu.config.RabbitMQConfig;
 import com.unq.mitvu.controller.body.BajaEstudianteBodyDTO;
 import com.unq.mitvu.controller.body.EstudianteBodyDTO;
+import com.unq.mitvu.controller.body.TokenFCMBodyDTO;
+import com.unq.mitvu.controller.dto.AsistenciaDTO;
+import com.unq.mitvu.controller.dto.NotificacionFaltaDTO;
 import com.unq.mitvu.controller.dto.detalle.EstudianteDetalleDTO;
 import com.unq.mitvu.controller.dto.resumen.EstudianteResumenDTO;
 import com.unq.mitvu.mapper.ComisionMapper;
@@ -13,8 +17,8 @@ import com.unq.mitvu.service.ComisionService;
 import com.unq.mitvu.service.EstudianteService;
 import com.unq.mitvu.service.TutorService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.jspecify.annotations.NonNull;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +38,8 @@ public class EstudianteController {
     @Autowired private TutorMapper tutorMapper;
     @Autowired private ComisionMapper comisionMapper;
     @Autowired private EstudianteMapper estudianteMapper;
+
+    @Autowired private RabbitTemplate rabbitTemplate;
 
     @GetMapping
     public ResponseEntity<List<EstudianteDetalleDTO>> obtenerEstudiantes(){
@@ -96,6 +102,28 @@ public class EstudianteController {
         return getEstudianteDetalleDTOResponseEntity(estudiante);
     }
 
+    @PutMapping("/{idEstudiante}/pasarAsistencia")
+    public ResponseEntity<EstudianteDetalleDTO> pasarAsistenciaDeEstudiante(@PathVariable String idEstudiante, @Valid @RequestBody AsistenciaDTO asistenciaDTO) {
+        Estudiante estudiante = estudianteService.pasarAsistenciaDeEstudiante(idEstudiante, asistenciaDTO.aAsistenciaModelo());
+
+        if (estudiante.getCantidadDeFaltas() >= 2){
+            NotificacionFaltaDTO dto = NotificacionFaltaDTO.builder()
+                    .idEstudiante(idEstudiante)
+                    .correoDestino("eliancamiloalejandro@gmail.com")
+                    .nombreEstudiante(estudiante.getNombre())
+                    .fcmToken(estudiante.getFcmToken())
+                    .cantidadDeFaltas(estudiante.getCantidadDeFaltas())
+                    .build();
+
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.EXCHANGE_NAME,
+                    RabbitMQConfig.ROUTING_KEY,
+                    dto
+            );
+        }
+        return getEstudianteDetalleDTOResponseEntity(estudiante);
+    }
+
     @GetMapping("/{idEstudiante}/dadoDeBaja")
     public boolean estaDadoDeBaja(@PathVariable String idEstudiante){
         return estudianteService.estaDadoDeBaja(idEstudiante);
@@ -115,10 +143,16 @@ public class EstudianteController {
         return ResponseEntity.ok(estudiantesDetalle);
     }
 
-    @GetMapping("comision/{idComision}/baja")
+    @GetMapping("/comision/{idComision}/baja")
     public ResponseEntity<List<EstudianteResumenDTO>> obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(@PathVariable String idComision){
         List<Estudiante> estudiantes = estudianteService.obtenerTodosLosEstudiantesDadosDeBajaDeUnaComision(idComision);
         return ResponseEntity.ok(estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes));
+    }
+
+    @PutMapping("/{id}/fcmToken")
+    public ResponseEntity<Void> actualizarTokenFCM(@PathVariable String id, @RequestBody TokenFCMBodyDTO dto) {
+        Estudiante estudiante = estudianteService.actualizarTokenFCM(id, dto.getToken());
+        return ResponseEntity.ok().build();
     }
 
     @NonNull
@@ -132,4 +166,6 @@ public class EstudianteController {
         estudianteDetalle.setRol(estudiante.getRol().getDescripcionRol());
         return ResponseEntity.ok(estudianteDetalle);
     }
+
+
 }

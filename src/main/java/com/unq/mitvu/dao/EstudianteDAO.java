@@ -3,11 +3,13 @@ package com.unq.mitvu.dao;
 import com.unq.mitvu.model.Comision;
 import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.model.MotivoBaja;
+import com.unq.mitvu.model.TipoDeAsistencia;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -54,4 +56,16 @@ public interface EstudianteDAO extends MongoRepository<Estudiante, String> {
     Integer countEstudiantesByBaja_idComisionDadoDeBajaAndBaja_Motivo(String bajaIdComisionDadoDeBaja, MotivoBaja bajaMotivo);
 
     Integer countEstudianteByComision_Id(String comisionId);
+
+    @Query(value = "{ 'asistencias': { $elemMatch: { 'fecha': ?0, 'tipoDeAsistencia': ?1 } } }", count = true)
+    long countEstudiantesPorFechaYTipoAsistencia(LocalDate fecha, TipoDeAsistencia tipo);
+
+    @Query(value = "{ 'asistencias.fecha': ?0 }", count = true)
+    long countEstudiantesConAsistenciaEnFecha(LocalDate fecha);
+
+    @Query(value = "{ 'comision.id': ?0, 'asistencias': { $elemMatch: { 'fecha': ?1, 'tipoDeAsistencia': ?2 } } }", count = true)
+    long countEstudiantesDeComisionPorFechaYTipoAsistencia(String idComision, LocalDate fecha, TipoDeAsistencia tipo);
+
+    @Query(value = "{ 'comision.id': ?0, 'asistencias.fecha': ?1 }", count = true)
+    long countEstudiantesDeComisionConAsistenciaEnFecha(String idComision, LocalDate fecha);
 }

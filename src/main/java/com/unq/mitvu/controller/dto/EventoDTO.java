@@ -14,4 +14,5 @@ public class EventoDTO {
     private String descripcion;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate fecha;
+    private String idComision;
 }

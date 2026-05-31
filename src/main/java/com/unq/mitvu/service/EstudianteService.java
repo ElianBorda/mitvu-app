@@ -1,11 +1,13 @@
 package com.unq.mitvu.service;
 
+import com.unq.mitvu.model.Asistencia;
 import com.unq.mitvu.model.Estudiante;
 import com.unq.mitvu.model.FormularioBaja;
 
 import java.util.List;
 
 public interface EstudianteService {
+    Estudiante actualizarTokenFCM(String id, String token);
     Estudiante crear(Estudiante estudiante);
     void crearTodos(List<Estudiante> estudiantes);
     Estudiante obtenerPorId(String id);
@@ -26,4 +28,5 @@ public interface EstudianteService {
     List<Estudiante> obtenerEstudiantesDeBaja();
     List<Estudiante> obtenerEstudiantesActivos();
     boolean estaDadoDeBaja(String idEstudiante);
+    Estudiante pasarAsistenciaDeEstudiante(String idEstudiante, Asistencia asistencia);
 }
