@@ -7,6 +7,7 @@ import com.unq.mitvu.model.FormularioBaja;
 import java.util.List;
 
 public interface EstudianteService {
+    Estudiante actualizarTokenFCM(String id, String token);
     Estudiante crear(Estudiante estudiante);
     void crearTodos(List<Estudiante> estudiantes);
     Estudiante obtenerPorId(String id);

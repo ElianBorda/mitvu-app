@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificacionFaltaDTO {
-    public String idEstudiante;
-    public String correoDestino;
+public class NotificacionAnuncioDTO {
+    public String idUsuario;
+    public String fcmToken;
     public String nombreEstudiante;
-    public Integer cantidadDeFaltas;
-    private String fcmToken;
+    public String tituloAnuncio;
+    public String descripcionAnuncio;
 }

@@ -3,6 +3,7 @@ package com.unq.mitvu.controller;
 import com.unq.mitvu.config.RabbitMQConfig;
 import com.unq.mitvu.controller.body.BajaEstudianteBodyDTO;
 import com.unq.mitvu.controller.body.EstudianteBodyDTO;
+import com.unq.mitvu.controller.body.TokenFCMBodyDTO;
 import com.unq.mitvu.controller.dto.AsistenciaDTO;
 import com.unq.mitvu.controller.dto.NotificacionFaltaDTO;
 import com.unq.mitvu.controller.dto.detalle.EstudianteDetalleDTO;
@@ -110,6 +111,7 @@ public class EstudianteController {
                     .idEstudiante(idEstudiante)
                     .correoDestino("eliancamiloalejandro@gmail.com")
                     .nombreEstudiante(estudiante.getNombre())
+                    .fcmToken(estudiante.getFcmToken())
                     .cantidadDeFaltas(estudiante.getCantidadDeFaltas())
                     .build();
 
@@ -147,6 +149,12 @@ public class EstudianteController {
         return ResponseEntity.ok(estudianteMapper.aListaDeEstudianteResumenDTO(estudiantes));
     }
 
+    @PutMapping("/{id}/fcmToken")
+    public ResponseEntity<Void> actualizarTokenFCM(@PathVariable String id, @RequestBody TokenFCMBodyDTO dto) {
+        Estudiante estudiante = estudianteService.actualizarTokenFCM(id, dto.getToken());
+        return ResponseEntity.ok().build();
+    }
+
     @NonNull
     private ResponseEntity<EstudianteDetalleDTO> getEstudianteDetalleDTOResponseEntity(Estudiante estudiante) {
         EstudianteDetalleDTO estudianteDetalle =  estudianteMapper.aEstudianteDetalleDTO(estudiante);
@@ -158,4 +166,6 @@ public class EstudianteController {
         estudianteDetalle.setRol(estudiante.getRol().getDescripcionRol());
         return ResponseEntity.ok(estudianteDetalle);
     }
+
+
 }

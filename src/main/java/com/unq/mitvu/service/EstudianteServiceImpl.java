@@ -33,6 +33,13 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
+    public Estudiante actualizarTokenFCM(String id, String token) {
+        Estudiante estudiante = this.obtenerPorId(id);
+        estudiante.setFcmToken(token);
+        return estudianteDAO.save(estudiante);
+    }
+
+    @Override
     public Estudiante crear(Estudiante estudiante) {
         estudiante.setRol(Rol.ESTUDIANTE);
         return estudianteDAO.save(estudiante);

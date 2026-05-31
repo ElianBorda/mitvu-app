@@ -133,4 +133,87 @@ public class EmailServiceImpl implements EmailService{
             throw new RuntimeException("Error enviando correo SMTP", e);
         }
     }
+
+    @Override
+    public void enviarCorreoDeAnuncio(String nombreEstudiante, String titulo, String descripcion) {
+        try {
+            MimeMessage mensaje = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
+
+            helper.setFrom("eliancamiloalejandro@gmail.com");
+            // Apuntamos todos los correos a la dirección solicitada
+            helper.setTo("eliancamiloalejandro@gmail.com");
+            helper.setSubject("📢 Nuevo Anuncio: " + titulo + " — Taller de Vida Universitaria");
+
+            String htmlContent = """
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: 'Segoe UI', Arial, sans-serif;">
+                <table width="100%%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 0;">
+                    <tr>
+                        <td align="center">
+                            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                <tr>
+                                    <td style="background-color: #7B0D1E; padding: 32px 40px; text-align: center;">
+                                        <p style="margin: 0; color: #ffffff; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; font-weight: 300;">
+                                            Universidad Nacional de Quilmes
+                                        </p>
+                                        <h1 style="margin: 8px 0 0 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px;">
+                                            mi<span style="font-style: italic; font-weight: 300;">TVU</span>
+                                        </h1>
+                                        <p style="margin: 6px 0 0 0; color: rgba(255,255,255,0.75); font-size: 12px; font-weight: 300;">
+                                            Taller de Vida Universitaria
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #eef2f5; border-bottom: 3px solid #7B0D1E; padding: 16px 40px; text-align: center;">
+                                        <p style="margin: 0; color: #2c3e50; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">
+                                            📢 &nbsp; %s
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 40px 40px 32px 40px;">
+                                        <p style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 16px;">
+                                            ¡Hola, <strong style="color: #7B0D1E;">%s</strong>! Un nuevo anuncio fue publicado en la página. <i>Accede para conocer el detalle</i>
+                                        </p>
+                                        <div style="background-color: #f8f9fa; border-left: 4px solid #7B0D1E; padding: 20px; border-radius: 4px; margin-bottom: 24px; color: #444444; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">%s</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0 40px;">
+                                        <hr style="border: none; border-top: 1px solid #eeeeee; margin: 0;">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 24px 40px; text-align: center;">
+                                        <p style="margin: 0 0 4px 0; color: #999999; font-size: 12px;">
+                                            Este es un mensaje automático generado por <strong>miTVU</strong>.
+                                        </p>
+                                        <p style="margin: 0; color: #bbbbbb; font-size: 11px;">
+                                            Universidad Nacional de Quilmes · Taller de Vida Universitaria
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
+            """.formatted(titulo, nombreEstudiante, descripcion);
+
+            helper.setText(htmlContent, true);
+            mailSender.send(mensaje);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error enviando correo SMTP", e);
+        }
+    }
+
 }
