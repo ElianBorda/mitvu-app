@@ -1,7 +1,11 @@
 package com.unq.mitvu.service;
 
+import com.unq.mitvu.model.DataPoint;
+import com.unq.mitvu.model.FiltroMetrica;
 import com.unq.mitvu.model.MotivoBaja;
 import com.unq.mitvu.model.TipoDeAsistencia;
+
+import java.util.List;
 
 public interface MetricaService {
     Integer cantidadDeEstudiantesDadosDeBaja();
@@ -17,5 +21,7 @@ public interface MetricaService {
 
     public Integer porcentajeDeTipoDeAsistenciaGlobal(String idEvento, TipoDeAsistencia tipoDeAsistencia);
     public Integer porcentajeDeTipoDeAsistenciaPorComision(String idComision, String idEvento, TipoDeAsistencia tipoDeAsistencia);
+
+    List<DataPoint> generarMetrica(FiltroMetrica filtro);
 
 }

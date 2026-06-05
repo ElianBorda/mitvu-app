@@ -1,9 +1,14 @@
 package com.unq.mitvu.controller;
 
+import com.unq.mitvu.controller.dto.DataPointDTO;
+import com.unq.mitvu.controller.body.FiltroMetricaBodyDTO;
 import com.unq.mitvu.controller.dto.MetricaAsistenciaDTO;
 import com.unq.mitvu.controller.dto.MetricaBajaDTO;
 import com.unq.mitvu.mapper.EventoMapper;
+import com.unq.mitvu.mapper.MetricaMapper;
+import com.unq.mitvu.model.DataPoint;
 import com.unq.mitvu.model.Evento;
+import com.unq.mitvu.model.FiltroMetrica;
 import com.unq.mitvu.model.TipoDeAsistencia;
 import com.unq.mitvu.service.EventoService;
 import com.unq.mitvu.service.MetricaService;
@@ -22,6 +27,7 @@ public class MetricaController {
     @Autowired MetricaService metricaService;
     @Autowired EventoService eventoService;
     @Autowired EventoMapper eventoMapper;
+    @Autowired MetricaMapper metricaMapper;
 
     @GetMapping("/estudiantes/dadosDeBaja")
     public ResponseEntity<MetricaBajaDTO> obtenerMetricasDeBajaDeTodosLosEstudiantes(){
@@ -78,4 +84,13 @@ public class MetricaController {
         }
         return ResponseEntity.ok(metricaAsistenciaDTOS);
     };
+
+    @PostMapping("/dinamicas")
+    public ResponseEntity<List<DataPointDTO>> obtenerMetricasDinamicas(@RequestBody FiltroMetricaBodyDTO filtrosDTO) {
+        FiltroMetrica filtrosModelo = metricaMapper.aFiltroMetrica(filtrosDTO);
+        List<DataPoint> resultadosModelo = metricaService.generarMetrica(filtrosModelo);
+        List<DataPointDTO> respuestaDTO = metricaMapper.aListaDeDataPointDTO(resultadosModelo);
+
+        return ResponseEntity.ok(respuestaDTO);
+    }
 }
