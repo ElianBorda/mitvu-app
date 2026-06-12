@@ -21,4 +21,5 @@ public class FiltroMetricaBodyDTO {
     private MotivoBaja motivoBaja;
     @NotBlank(message = "El tipo de calculo es obligatorio")
     private TipoCalculo tipoCalculo;
+    private String localidad;
 }

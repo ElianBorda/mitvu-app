@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -132,11 +133,24 @@ public class MetricaServiceImpl implements MetricaService{
 
         long totalEstudiantes = 0;
         if (filtro.getTipoCalculo() == TipoCalculo.PORCENTAJE) {
+            List<AggregationOperation> countOps = new ArrayList<>();
             Criteria criteriaBase = new Criteria();
             if (filtro.getIdComision() != null && !filtro.getIdComision().isEmpty()) {
                 criteriaBase.and("comision").is(new ObjectId(filtro.getIdComision()));
             }
-            totalEstudiantes = mongoTemplate.count(Query.query(criteriaBase), "estudiantes");
+            countOps.add(Aggregation.match(criteriaBase));
+
+            // Si hay filtro por localidad, necesitamos unir las comisiones para contar el total base
+            if (filtro.getLocalidad() != null && !filtro.getLocalidad().isEmpty()) {
+                countOps.add(Aggregation.lookup("comisiones", "comision", "_id", "datosComision"));
+                countOps.add(Aggregation.unwind("datosComision", true));
+                countOps.add(Aggregation.match(Criteria.where("datosComision.localidad").is(filtro.getLocalidad())));
+            }
+
+            countOps.add(Aggregation.count().as("total"));
+            Map result = mongoTemplate.aggregate(Aggregation.newAggregation(countOps), "estudiantes", Map.class).getUniqueMappedResult();
+            totalEstudiantes = result != null && result.get("total") != null ? ((Number) result.get("total")).longValue() : 0;
+
             if (totalEstudiantes == 0) return new ArrayList<>();
         }
 
@@ -154,6 +168,13 @@ public class MetricaServiceImpl implements MetricaService{
         }
         pipeline.add(Aggregation.match(criteria));
 
+        pipeline.add(Aggregation.lookup("comisiones", "comision", "_id", "datosComision"));
+        pipeline.add(Aggregation.unwind("datosComision", true));
+
+        if (filtro.getLocalidad() != null && !filtro.getLocalidad().isEmpty()) {
+            pipeline.add(Aggregation.match(Criteria.where("datosComision.localidad").is(filtro.getLocalidad())));
+        }
+
         String campoAgrupacion = "baja.motivo";
 
         if (filtro.getAgruparPor() == Agrupacion.COMISION) {
@@ -163,6 +184,9 @@ public class MetricaServiceImpl implements MetricaService{
         } else if (filtro.getAgruparPor() == Agrupacion.ANIO) {
             pipeline.add(Aggregation.project().and(DateOperators.Year.yearOf("baja.fechaBaja")).as("campoTemporalAnio"));
             campoAgrupacion = "campoTemporalAnio";
+        } else if (filtro.getAgruparPor() == Agrupacion.LOCALIDAD) {
+            // Extraemos la agrupación desde el objeto comision
+            campoAgrupacion = "datosComision.localidad";
         }
 
         pipeline.add(Aggregation.group(campoAgrupacion).count().as("cantidadTotal"));
@@ -170,11 +194,14 @@ public class MetricaServiceImpl implements MetricaService{
         ProjectionOperation projectStage = Aggregation.project();
 
         if (filtro.getAgruparPor() == Agrupacion.FECHA) {
-            projectStage = projectStage.and(DateOperators.DateToString.dateOf("_id").toString("%d-%m-%Y")).as("etiqueta");
+            projectStage = projectStage.and(ConditionalOperators.IfNull.ifNull(
+                    DateOperators.DateToString.dateOf("_id").toString("%d-%m-%Y")
+            ).then("Sin Asignar")).as("etiqueta");
         } else {
-            projectStage = projectStage.andExpression("toString(_id)").as("etiqueta");
+            projectStage = projectStage.and(ConditionalOperators.IfNull.ifNull(
+                    ConvertOperators.ToString.toString("$_id")
+            ).then("Sin Asignar")).as("etiqueta");
         }
-
         if (filtro.getTipoCalculo() == TipoCalculo.PORCENTAJE) {
             projectStage = projectStage.andExpression("(cantidadTotal * 100) / [0]", totalEstudiantes).as("valor");
         } else {
@@ -197,6 +224,13 @@ public class MetricaServiceImpl implements MetricaService{
         }
         pipeline.add(Aggregation.match(criteriaInicial));
 
+        pipeline.add(Aggregation.lookup("comisiones", "comision", "_id", "datosComision"));
+        pipeline.add(Aggregation.unwind("datosComision", true));
+
+        if (filtro.getLocalidad() != null && !filtro.getLocalidad().isEmpty()) {
+            pipeline.add(Aggregation.match(Criteria.where("datosComision.localidad").is(filtro.getLocalidad())));
+        }
+
         pipeline.add(Aggregation.unwind("asistencias"));
 
         Criteria criteriaSecundario = new Criteria();
@@ -216,6 +250,8 @@ public class MetricaServiceImpl implements MetricaService{
             preGroupProject = preGroupProject.and("asistencias.fecha").as("campoAgrupacion");
         } else if (filtro.getAgruparPor() == Agrupacion.ANIO) {
             preGroupProject = preGroupProject.and(DateOperators.Year.yearOf("asistencias.fecha")).as("campoAgrupacion");
+        } else if (filtro.getAgruparPor() == Agrupacion.LOCALIDAD) {
+            preGroupProject = preGroupProject.and("datosComision.localidad").as("campoAgrupacion");
         } else {
             preGroupProject = preGroupProject.and("asistencias.tipoDeAsistencia").as("campoAgrupacion");
         }
@@ -240,9 +276,14 @@ public class MetricaServiceImpl implements MetricaService{
         ProjectionOperation finalProject = Aggregation.project();
 
         if (filtro.getAgruparPor() == Agrupacion.FECHA) {
-            finalProject = finalProject.and(DateOperators.DateToString.dateOf("_id").toString("%d-%m-%Y")).as("etiqueta");
+            finalProject = finalProject.and(ConditionalOperators.IfNull.ifNull(
+                    DateOperators.DateToString.dateOf("_id").toString("%d-%m-%Y")
+            ).then("Sin Asignar")).as("etiqueta");
         } else {
-            finalProject = finalProject.andExpression("toString(_id)").as("etiqueta");
+            // CORRECCIÓN: Agregamos el "$" antes de _id
+            finalProject = finalProject.and(ConditionalOperators.IfNull.ifNull(
+                    ConvertOperators.ToString.toString("$_id")
+            ).then("Sin Asignar")).as("etiqueta");
         }
 
         if (filtro.getTipoCalculo() == TipoCalculo.PORCENTAJE) {
@@ -255,8 +296,6 @@ public class MetricaServiceImpl implements MetricaService{
         Aggregation aggregation = Aggregation.newAggregation(pipeline);
         return mongoTemplate.aggregate(aggregation, "estudiantes", DataPoint.class).getMappedResults();
     }
-
-
     @Override
     public Integer cantidadDeEstudiantesDadosDeBajaPorMotivo(MotivoBaja motivo) {
         return estudianteDAO.countEstudianteByBaja_Motivo(motivo);

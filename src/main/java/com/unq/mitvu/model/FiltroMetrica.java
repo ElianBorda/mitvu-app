@@ -13,4 +13,5 @@ public class FiltroMetrica {
     private TipoDeAsistencia tipoDeAsistencia;
     private MotivoBaja motivoBaja;
     private TipoCalculo tipoCalculo;
+    private String localidad;
 }

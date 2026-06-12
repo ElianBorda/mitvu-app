@@ -9,7 +9,8 @@ public enum Agrupacion {
     COMISION("Comision"),
     MOTIVO("Motivo"),
     FECHA("Fecha"),
-    ANIO("Año");
+    ANIO("Año"),
+    LOCALIDAD("Localidad");
 
     private final String descripcionAgrupacion;
 }
