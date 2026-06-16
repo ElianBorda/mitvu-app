@@ -16,7 +16,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Service
-public class AnuncioServiceImpl implements  AnuncioService {
+public class AnuncioServiceImpl implements AnuncioService {
 
     @Autowired
     private AnuncioMapper anuncioMapper;
@@ -52,6 +52,15 @@ public class AnuncioServiceImpl implements  AnuncioService {
     }
 
     @Override
+    public Anuncio obtenerPorId(String idAnuncio) {
+        Anuncio anuncio = anuncioDAO.findById(idAnuncio).orElseThrow(
+                () -> new ReglaDeNegocioException("No existe el anuncio con id: " + idAnuncio)
+        );
+
+        return anuncio;
+    }
+
+    @Override
     public List<Anuncio> obtenerAnunciosDeComision(String idComision) {
 
         comisionDAO.findById(idComision).orElseThrow(
@@ -59,5 +68,17 @@ public class AnuncioServiceImpl implements  AnuncioService {
         );
 
         return anuncioDAO.findByidComision(idComision);
+    }
+
+    @Override
+    public Anuncio modificarPorId(String idAnuncio, Anuncio anuncio) {
+        Anuncio anuncioEncontrado = this.obtenerPorId(idAnuncio);
+        anuncioMapper.actualizarAnuncio(anuncio, anuncioEncontrado);
+        return anuncioDAO.save(anuncioEncontrado);
+    }
+
+    @Override
+    public void eliminarAnuncio(String idAnuncio) {
+        anuncioDAO.delete(this.obtenerPorId(idAnuncio));
     }
 }

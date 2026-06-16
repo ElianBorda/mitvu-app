@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 public class AnuncioDTO {
 
+    private String id;
     private String titulo;
     private String descripcion;
     private LocalDate fechaDeCreacion;
