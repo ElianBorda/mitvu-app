@@ -72,10 +72,28 @@ public class AnuncioController {
         return new ResponseEntity<>(anuncioMapper.aListaDeAnuncioDTO(anuncios),  HttpStatus.OK);
     }
 
+    @GetMapping("/{idAnuncio}")
+    public ResponseEntity<AnuncioDTO> obtenerAnuncio(@PathVariable String idAnuncio) {
+        Anuncio anuncio = anuncioService.obtenerPorId(idAnuncio);
+        return new ResponseEntity<>(anuncioMapper.aAnuncioDTO(anuncio), HttpStatus.OK);
+    }
+
     @GetMapping("/comision/{idComision}")
     public ResponseEntity<List<AnuncioDTO>> obtenerAnunciosDeComision(@PathVariable String idComision) {
         List<Anuncio> anuncios = anuncioService.obtenerAnunciosDeComision(idComision);
         return new ResponseEntity<>(anuncioMapper.aListaDeAnuncioDTO(anuncios),  HttpStatus.OK);
+    }
+
+    @PutMapping("/{idAnuncio}")
+    public ResponseEntity<AnuncioDTO> modificarAnuncio(@Valid @RequestBody AnuncioBodyDTO anuncioBodyDTO,  @PathVariable String idAnuncio) {
+        Anuncio anuncio = anuncioService.modificarPorId(idAnuncio, anuncioMapper.aAnuncio(anuncioBodyDTO));
+        return new ResponseEntity<>(anuncioMapper.aAnuncioDTO(anuncio), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{idAnuncio}")
+    public ResponseEntity<Void> eliminarAnuncio(@PathVariable String idAnuncio) {
+        anuncioService.eliminarAnuncio(idAnuncio);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
