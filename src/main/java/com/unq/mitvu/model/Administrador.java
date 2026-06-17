@@ -1,5 +1,16 @@
 package com.unq.mitvu.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@ToString
+@NoArgsConstructor
+@Getter
+@Setter
+@Document(collection = "administradores")
 public class Administrador extends Usuario{
 
     public Administrador(String id, String apellido, String nombre, String dni, String mail, String password) {
