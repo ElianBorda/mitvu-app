@@ -1,5 +1,6 @@
 package com.unq.mitvu.service;
 
+import com.unq.mitvu.dao.AdministradorDAO;
 import com.unq.mitvu.dao.AnuncioDAO;
 import com.unq.mitvu.dao.ComisionDAO;
 import com.unq.mitvu.dao.TutorDAO;
@@ -24,6 +25,7 @@ public class AnuncioServiceImpl implements AnuncioService {
     private TutorDAO tutorDAO;
     private ComisionDAO comisionDAO;
     private AnuncioDAO anuncioDAO;
+    private AdministradorDAO administradorDAO;
 
     @Override
     public Anuncio crear(Anuncio anuncio) {
@@ -34,12 +36,14 @@ public class AnuncioServiceImpl implements AnuncioService {
             );
         }
         if (anuncio.getCreadoPorId() != null) {
-            tutorDAO.findById(anuncio.getCreadoPorId()).orElseThrow(
-                    () -> new ReglaDeNegocioException("No se puede asignar como creador al tutor con ID: " + anuncio.getCreadoPorId() + "porque no existe")
-            );
-        }
-        else {
-            anuncio.setCreadoPorId("Administrador");
+            boolean esTutor = tutorDAO.findById(anuncio.getCreadoPorId()).isPresent();
+            boolean esAdministrador = administradorDAO.findById(anuncio.getCreadoPorId()).isPresent();
+
+            if (!esTutor && !esAdministrador) {
+                throw new ReglaDeNegocioException("No se puede asignar como creador al usuario con ID: " + anuncio.getCreadoPorId() + " porque no existe ni como tutor ni como administrador");
+            }
+        } else {
+            throw new ReglaDeNegocioException("El anuncio debe especificar un creador válido");
         }
         return anuncioDAO.save(anuncio);
     }

@@ -1,10 +1,7 @@
 package com.unq.mitvu.config;
 
 import com.unq.mitvu.model.*;
-import com.unq.mitvu.service.ComisionService;
-import com.unq.mitvu.service.EstudianteService;
-import com.unq.mitvu.service.EventoService;
-import com.unq.mitvu.service.TutorService;
+import com.unq.mitvu.service.*;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
@@ -24,15 +21,17 @@ import static com.unq.mitvu.model.DiaHabil.VIERNES;
 @Profile({"dev", "test"})
 public class DataInitializer implements ApplicationRunner {
 
+    private final AdministradorService administradorService;
     private final ComisionService comisionService;
     private final TutorService tutorService;
     private final EstudianteService estudianteService;
     private final EventoService eventoService;
 
-    public DataInitializer(ComisionService comisionService,
+    public DataInitializer(AdministradorService administradorService, ComisionService comisionService,
                            TutorService tutorService,
                            EstudianteService estudianteService,
                            EventoService eventoService) {
+        this.administradorService = administradorService;
         this.comisionService = comisionService;
         this.tutorService = tutorService;
         this.estudianteService = estudianteService;
@@ -43,12 +42,20 @@ public class DataInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
 
         // Limpiamos todo antes de insertar para evitar duplicados en cada reinicio
+        administradorService.eliminarTodo();
         estudianteService.eliminarTodasLasComisionesDeTodosLosEstudiantes();
         estudianteService.eliminarTodo();
         comisionService.eliminarTodosLosTutoresDeTodasLasComisiones();
         comisionService.eliminarTodo();
         tutorService.eliminarTodo();
         eventoService.eliminarTodo();
+
+        // ─────────────────────────────────────────
+        // ADMINISTRADORES (2)
+        // ─────────────────────────────────────────
+
+        Administrador a1 = administradorService.crear(new Administrador("Borda",    "Elián", "42997562", "eliancamiloalejandro@gmail.com"));
+        Administrador a2 = administradorService.crear(new Administrador("Ferro",     "Ignacio",  "44564123", "ignacioferro.if@gmail.com"));
 
         // ─────────────────────────────────────────
         // COMISIONES (8)
@@ -163,7 +170,7 @@ public class DataInitializer implements ApplicationRunner {
         eventoService.crear(new Evento(null, "Encuentro 6", "Último encuentro presencial del taller.",  s2Viernes,   null, null, true));
 
         System.out.println("✅ DataInitializer: datos de prueba cargados correctamente.");
-        System.out.println("   → 8 comisiones | 4 tutores | 8 estudiantes activos | 4 dados de baja | 6 eventos");
+        System.out.println("   → 2 administradores | 8 comisiones | 4 tutores | 8 estudiantes activos | 4 dados de baja | 6 eventos");
         System.out.println("   → Cursada: " + s1Lunes + " → " + s2Viernes);
     }
 }
