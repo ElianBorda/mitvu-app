@@ -26,17 +26,21 @@ public class DataInitializer implements ApplicationRunner {
     private final TutorService tutorService;
     private final EstudianteService estudianteService;
     private final EventoService eventoService;
+    private final AnuncioService anuncioService;
 
     public DataInitializer(AdministradorService administradorService, ComisionService comisionService,
                            TutorService tutorService,
                            EstudianteService estudianteService,
-                           EventoService eventoService) {
+                           EventoService eventoService,
+                           AnuncioService anuncioService) {
         this.administradorService = administradorService;
         this.comisionService = comisionService;
         this.tutorService = tutorService;
         this.estudianteService = estudianteService;
         this.eventoService = eventoService;
+        this.anuncioService = anuncioService;
     }
+
 
     @Override
     public void run(ApplicationArguments args) {
@@ -49,6 +53,7 @@ public class DataInitializer implements ApplicationRunner {
         comisionService.eliminarTodo();
         tutorService.eliminarTodo();
         eventoService.eliminarTodo();
+        anuncioService.eliminarTodo();
 
         // ─────────────────────────────────────────
         // ADMINISTRADORES (2)
@@ -162,12 +167,28 @@ public class DataInitializer implements ApplicationRunner {
         LocalDate s2Miercoles = primerLunes.plusDays(9);
         LocalDate s2Viernes   = primerLunes.plusDays(11);
 
+        //Eventos en una comisión
+        LocalDate s1Sabado = primerLunes.plusDays(5);
+        LocalDate s2Sabado =  primerLunes.plusDays(12);
+
         eventoService.crear(new Evento(null, "Encuentro 1", "Primer encuentro presencial del taller.",  s1Lunes,     null, null, true));
         eventoService.crear(new Evento(null, "Encuentro 2", "Segundo encuentro presencial del taller.", s1Miercoles, null, null, true));
         eventoService.crear(new Evento(null, "Encuentro 3", "Tercer encuentro presencial del taller.",  s1Viernes,   null, null, true));
         eventoService.crear(new Evento(null, "Encuentro 4", "Cuarto encuentro presencial del taller.",  s2Lunes,     null, null, true));
         eventoService.crear(new Evento(null, "Encuentro 5", "Quinto encuentro presencial del taller.",  s2Miercoles, null, null, true));
         eventoService.crear(new Evento(null, "Encuentro 6", "Último encuentro presencial del taller.",  s2Viernes,   null, null, true));
+
+        eventoService.crear(new Evento(null, "Entrega de ensayo - Primera semana", "Primer ensayo sobre lo que vivimos en el taller",  s1Sabado,   c1.getId(), t1.getId(), false));
+        eventoService.crear(new Evento(null, "Entrega de ensayo - Segunda semana", "Segundo ensayo sobre lo que vivimos en el taller",  s2Sabado,   c1.getId(), t1.getId(), false));
+
+        // ─────────────────────────────────────────
+        // ANUNCIOS DE LA CURSADA (4)
+        // Se crean globales y en la comision 1
+        // ─────────────────────────────────────────
+
+        anuncioService.crear(new Anuncio(null, "Bienvenidos a la cursada!", "Esperamos que se lleven una visión concreta de cómo funciona la universidad", hoy, null, a1.getId()));
+        anuncioService.crear(new Anuncio(null, "Bienvenidos a la comisión 1!", "Estos anuncios solo se visualizarán en nuestra comisión", hoy, c1.getId(), t1.getId()));
+        anuncioService.crear(new Anuncio(null, "Bienvenidos a la comisión 2!", "Estos anuncios solo se visualizarán en nuestra comisión", hoy, c2.getId(), t1.getId()));
 
         System.out.println("✅ DataInitializer: datos de prueba cargados correctamente.");
         System.out.println("   → 2 administradores | 8 comisiones | 4 tutores | 8 estudiantes activos | 4 dados de baja | 6 eventos");

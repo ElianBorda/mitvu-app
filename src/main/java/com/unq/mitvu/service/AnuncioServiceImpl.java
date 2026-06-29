@@ -85,4 +85,9 @@ public class AnuncioServiceImpl implements AnuncioService {
     public void eliminarAnuncio(String idAnuncio) {
         anuncioDAO.delete(this.obtenerPorId(idAnuncio));
     }
+
+    @Override
+    public void eliminarTodo() {
+        anuncioDAO.deleteAll();
+    }
 }

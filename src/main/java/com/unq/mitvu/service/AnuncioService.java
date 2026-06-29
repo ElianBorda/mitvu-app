@@ -16,4 +16,6 @@ public interface AnuncioService {
     Anuncio modificarPorId(String idAnuncio, Anuncio anuncio);
 
     void eliminarAnuncio(String idAnuncio);
+
+    void eliminarTodo();
 }

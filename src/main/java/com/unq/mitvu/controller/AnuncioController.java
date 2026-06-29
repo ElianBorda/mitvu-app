@@ -96,4 +96,10 @@ public class AnuncioController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @DeleteMapping()
+    public ResponseEntity<Void> eliminarTodo() {
+        anuncioService.eliminarTodo();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
