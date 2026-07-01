@@ -20,6 +20,7 @@ public class Usuario {
     protected String password;
     protected Rol rol;
     private String fcmToken;
+    protected Boolean requiereCambioPassword = true;
 
     public Usuario(String apellido, String nombre, String dni, String mail, Rol rol) {
         this.apellido = apellido;
