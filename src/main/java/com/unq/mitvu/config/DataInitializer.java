@@ -59,8 +59,8 @@ public class DataInitializer implements ApplicationRunner {
         // ADMINISTRADORES (2)
         // ─────────────────────────────────────────
 
-        Administrador a1 = administradorService.crear(new Administrador("Borda",    "Elián", "42997562", "eliancamiloalejandro@gmail.com"));
-        Administrador a2 = administradorService.crear(new Administrador("Ferro",     "Ignacio",  "44564123", "ignacioferro.if@gmail.com"));
+        Administrador a1 = administradorService.crear(new Administrador("Borda",    "Elián", "42997562", "eliancamiloalejandro@gmail.com", "admin1234"));
+        Administrador a2 = administradorService.crear(new Administrador("Ferro",     "Ignacio",  "44564123", "ignacioferro.if@gmail.com", "admin1234"));
 
         // ─────────────────────────────────────────
         // COMISIONES (8)

@@ -1,6 +1,7 @@
 package com.unq.mitvu.controller;
 
 import com.unq.mitvu.controller.dto.ErrorResponseDTO;
+import com.unq.mitvu.exceptions.CredencialesInvalidasException;
 import com.unq.mitvu.exceptions.RecursoNoEncontradoException;
 import com.unq.mitvu.exceptions.ReglaDeNegocioException;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,19 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<ErrorResponseDTO> manejarCredencialesInvalidas(CredencialesInvalidasException ex, WebRequest request) {
+
+        ErrorResponseDTO error = ErrorResponseDTO.builder()
+                .mensaje(ex.getMessage())
+                .codigoEstado(HttpStatus.UNAUTHORIZED.value())
+                .ruta(request.getDescription(false))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
     public ResponseEntity<ErrorResponseDTO> manejarRecursoNoEncontrado(RecursoNoEncontradoException ex, WebRequest request) {

@@ -1,9 +1,6 @@
 package com.unq.mitvu.dao;
 
-import com.unq.mitvu.model.Comision;
-import com.unq.mitvu.model.Estudiante;
-import com.unq.mitvu.model.MotivoBaja;
-import com.unq.mitvu.model.TipoDeAsistencia;
+import com.unq.mitvu.model.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -68,4 +65,7 @@ public interface EstudianteDAO extends MongoRepository<Estudiante, String> {
 
     @Query(value = "{ 'comision.id': ?0, 'asistencias.fecha': ?1 }", count = true)
     long countEstudiantesDeComisionConAsistenciaEnFecha(String idComision, LocalDate fecha);
+
+    Optional<Estudiante> findByDni(String dni);
+
 }
