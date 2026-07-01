@@ -49,7 +49,6 @@ public class SolicitudTutorServiceImpl implements SolicitudTutorService {
         );
 
         Tutor tutorGuardado = tutorService.crear(nuevoTutor);
-
         solicitud.setEstadoSolicitud(EstadoSolicitud.APROBADA);
         solicitudTutorDAO.save(solicitud);
 
@@ -57,11 +56,11 @@ public class SolicitudTutorServiceImpl implements SolicitudTutorService {
     }
 
     @Override
-    public void rechazarSolicitud(String idSolicitud) {
+    public SolicitudTutor rechazarSolicitud(String idSolicitud) {
         SolicitudTutor solicitud = solicitudTutorDAO.findById(idSolicitud)
                 .orElseThrow(() -> new RecursoNoEncontradoException(idSolicitud, "No se encontró la solicitud"));
 
         solicitud.setEstadoSolicitud(EstadoSolicitud.RECHAZADA);
-        solicitudTutorDAO.save(solicitud);
+        return solicitudTutorDAO.save(solicitud);
     }
 }

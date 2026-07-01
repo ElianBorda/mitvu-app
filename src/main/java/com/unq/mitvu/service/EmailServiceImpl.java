@@ -216,4 +216,97 @@ public class EmailServiceImpl implements EmailService{
         }
     }
 
+    @Override
+    public void enviarCorreoSolicitudAprobada(String correoDestino, String nombreTutor, String passwordTemporal) {
+        try {
+            MimeMessage mensaje = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
+
+            helper.setFrom("eliancamiloalejandro@gmail.com");
+            helper.setTo("eliancamiloalejandro@gmail.com");
+            helper.setSubject("Solicitud Aprobada — Taller de Vida Universitaria");
+
+            String htmlContent = """
+            <!DOCTYPE html>
+            <html lang="es">
+            <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: 'Segoe UI', Arial, sans-serif;">
+                <table width="100%%" cellpadding="0" cellspacing="0" style="padding: 40px 0;">
+                    <tr><td align="center">
+                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <tr>
+                                <td style="background-color: #7B0D1E; padding: 32px 40px; text-align: center;">
+                                    <h1 style="margin: 8px 0 0 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px;">mi<span style="font-style: italic; font-weight: 300;">TVU</span></h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="background-color: #eef5ee; border-bottom: 3px solid #2e7d32; padding: 16px 40px; text-align: center;">
+                                    <p style="margin: 0; color: #2e7d32; font-size: 14px; font-weight: 600;">✅ &nbsp; POSTULACIÓN APROBADA</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 40px 40px 32px 40px;">
+                                    <p style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 16px;">¡Bienvenido/a, <strong style="color: #7B0D1E;">%s</strong>!</p>
+                                    <p style="color: #444444; font-size: 15px; line-height: 1.6;">Tu solicitud para ser tutor ha sido aprobada por la administración. Ya podés ingresar a la plataforma utilizando tu DNI y la siguiente contraseña temporal:</p>
+                                    <div style="background-color: #f8f9fa; border-left: 4px solid #7B0D1E; padding: 20px; border-radius: 4px; margin: 24px 0; text-align: center;">
+                                        <span style="font-size: 22px; font-weight: 700; color: #1a1a1a; letter-spacing: 2px;">%s</span>
+                                    </div>
+                                    <p style="color: #e53935; font-size: 13px; font-weight: 600;">Por cuestiones de seguridad, el sistema te solicitará cambiar esta contraseña durante tu primer inicio de sesión.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td></tr>
+                </table>
+            </body>
+            </html>
+            """.formatted(nombreTutor, passwordTemporal);
+
+            helper.setText(htmlContent, true);
+            mailSender.send(mensaje);
+        } catch (Exception e) {
+            throw new RuntimeException("Error enviando correo SMTP", e);
+        }
+    }
+
+    @Override
+    public void enviarCorreoSolicitudRechazada(String correoDestino, String nombreTutor) {
+        try {
+            MimeMessage mensaje = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
+
+            helper.setFrom("eliancamiloalejandro@gmail.com");
+            helper.setTo("eliancamiloalejandro@gmail.com");
+            helper.setSubject("Información sobre tu solicitud — Taller de Vida Universitaria");
+
+            String htmlContent = """
+            <!DOCTYPE html>
+            <html lang="es">
+            <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: 'Segoe UI', Arial, sans-serif;">
+                <table width="100%%" cellpadding="0" cellspacing="0" style="padding: 40px 0;">
+                    <tr><td align="center">
+                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <tr>
+                                <td style="background-color: #7B0D1E; padding: 32px 40px; text-align: center;">
+                                    <h1 style="margin: 8px 0 0 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px;">mi<span style="font-style: italic; font-weight: 300;">TVU</span></h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 40px 40px 32px 40px;">
+                                    <p style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 16px;">Hola, <strong style="color: #7B0D1E;">%s</strong></p>
+                                    <p style="color: #444444; font-size: 15px; line-height: 1.6;">Queremos agradecerte por tu interés en formar parte del equipo de tutores del Taller de Vida Universitaria.</p>
+                                    <p style="color: #444444; font-size: 15px; line-height: 1.6;">Luego de evaluar tu perfil, lamentamos informarte que en esta ocasión no podremos avanzar con tu solicitud. Te invitamos a postularte nuevamente en futuras convocatorias.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td></tr>
+                </table>
+            </body>
+            </html>
+            """.formatted(nombreTutor);
+
+            helper.setText(htmlContent, true);
+            mailSender.send(mensaje);
+        } catch (Exception e) {
+            throw new RuntimeException("Error enviando correo SMTP", e);
+        }
+    }
 }

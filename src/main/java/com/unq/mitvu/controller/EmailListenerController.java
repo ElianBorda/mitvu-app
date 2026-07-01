@@ -3,6 +3,7 @@ package com.unq.mitvu.controller;
 import com.unq.mitvu.config.RabbitMQConfig;
 import com.unq.mitvu.controller.dto.NotificacionAnuncioDTO;
 import com.unq.mitvu.controller.dto.NotificacionFaltaDTO;
+import com.unq.mitvu.controller.dto.NotificacionSolicitudDTO;
 import com.unq.mitvu.model.Notificacion;
 import com.unq.mitvu.service.EmailService;
 import com.unq.mitvu.service.NotificacionPushService;
@@ -72,5 +73,21 @@ public class EmailListenerController {
                 .build();
 
         notificacionService.crear(notificacion);
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.QUEUE_SOLICITUDES)
+    public void notificarResultadoSolicitud(NotificacionSolicitudDTO dto) {
+        if (dto.isAprobado()) {
+            emailService.enviarCorreoSolicitudAprobada(
+                    dto.getCorreoDestino(),
+                    dto.getNombreTutor(),
+                    dto.getPasswordTemporal()
+            );
+        } else {
+            emailService.enviarCorreoSolicitudRechazada(
+                    dto.getCorreoDestino(),
+                    dto.getNombreTutor()
+            );
+        }
     }
 }

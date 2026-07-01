@@ -8,5 +8,5 @@ public interface SolicitudTutorService {
     SolicitudTutor crearSolicitud(SolicitudTutor solicitud);
     List<SolicitudTutor> obtenerPendientes();
     Tutor aprobarSolicitud(String idSolicitud);
-    void rechazarSolicitud(String idSolicitud);
+    SolicitudTutor rechazarSolicitud(String idSolicitud);
 }

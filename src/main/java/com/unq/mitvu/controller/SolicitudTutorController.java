@@ -1,6 +1,8 @@
 package com.unq.mitvu.controller;
 
+import com.unq.mitvu.config.RabbitMQConfig;
 import com.unq.mitvu.controller.body.SolicitudTutorBodyDTO;
+import com.unq.mitvu.controller.dto.NotificacionSolicitudDTO;
 import com.unq.mitvu.controller.dto.SolicitudTutorDTO;
 import com.unq.mitvu.controller.dto.resumen.TutorResumenDTO;
 import com.unq.mitvu.mapper.SolicitudTutorMapper;
@@ -10,6 +12,7 @@ import com.unq.mitvu.model.Tutor;
 import com.unq.mitvu.service.SolicitudTutorService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +28,7 @@ public class SolicitudTutorController {
     private final SolicitudTutorService solicitudService;
     private final SolicitudTutorMapper solicitudMapper;
     private final TutorMapper tutorMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @PostMapping
     public ResponseEntity<SolicitudTutorDTO> crearSolicitud(@Valid @RequestBody SolicitudTutorBodyDTO dto) {
@@ -41,13 +45,35 @@ public class SolicitudTutorController {
 
     @PutMapping("/{id}/aprobar")
     public ResponseEntity<TutorResumenDTO> aprobarSolicitud(@PathVariable String id) {
+
         Tutor tutorCreado = solicitudService.aprobarSolicitud(id);
+
+        NotificacionSolicitudDTO notificacion = new NotificacionSolicitudDTO(
+                tutorCreado.getMail(),
+                tutorCreado.getNombre(),
+                true,
+                tutorCreado.getPassword()
+        );
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY_SOLICITUDES, notificacion);
+
         return ResponseEntity.ok(tutorMapper.aTutorResumenDTO(tutorCreado));
     }
 
     @PutMapping("/{id}/rechazar")
     public ResponseEntity<Void> rechazarSolicitud(@PathVariable String id) {
-        solicitudService.rechazarSolicitud(id);
+
+        SolicitudTutor solicitudRechazada = solicitudService.rechazarSolicitud(id);
+
+        NotificacionSolicitudDTO notificacion = new NotificacionSolicitudDTO(
+                solicitudRechazada.getCorreo(),
+                solicitudRechazada.getNombre(),
+                false,
+                null
+        );
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY_SOLICITUDES, notificacion);
+
         return ResponseEntity.noContent().build();
     }
 }

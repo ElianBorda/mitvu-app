@@ -15,6 +15,9 @@ public class RabbitMQConfig {
     public static final String QUEUE_ANUNCIOS = "emails.anuncios.queue";
     public static final String ROUTING_KEY_ANUNCIOS = "emails.anuncios.routingKey";
 
+    public static final String QUEUE_SOLICITUDES = "emails.solicitudes.queue";
+    public static final String ROUTING_KEY_SOLICITUDES = "emails.solicitudes.routingKey";
+
     @Bean
     public Queue emailQueue() {
         return new Queue(QUEUE_NAME, true);
@@ -43,5 +46,15 @@ public class RabbitMQConfig {
     @Bean
     public MessageConverter jsonMessageConverter() {
         return new JacksonJsonMessageConverter();
+    }
+
+    @Bean
+    public Queue solicitudesQueue() {
+        return new Queue(QUEUE_SOLICITUDES, true);
+    }
+
+    @Bean
+    public Binding bindingSolicitudes(Queue solicitudesQueue, DirectExchange emailExchange) {
+        return BindingBuilder.bind(solicitudesQueue).to(emailExchange).with(ROUTING_KEY_SOLICITUDES);
     }
 }
