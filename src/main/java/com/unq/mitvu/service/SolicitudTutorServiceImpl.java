@@ -63,4 +63,9 @@ public class SolicitudTutorServiceImpl implements SolicitudTutorService {
         solicitud.setEstadoSolicitud(EstadoSolicitud.RECHAZADA);
         return solicitudTutorDAO.save(solicitud);
     }
+
+    @Override
+    public void eliminarTodo() {
+        solicitudTutorDAO.deleteAll();
+    }
 }

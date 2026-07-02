@@ -9,4 +9,5 @@ public interface SolicitudTutorService {
     List<SolicitudTutor> obtenerPendientes();
     Tutor aprobarSolicitud(String idSolicitud);
     SolicitudTutor rechazarSolicitud(String idSolicitud);
+    void eliminarTodo();
 }

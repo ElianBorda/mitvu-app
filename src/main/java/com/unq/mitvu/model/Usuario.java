@@ -20,7 +20,7 @@ public class Usuario {
     protected String password;
     protected Rol rol;
     private String fcmToken;
-    protected Boolean requiereCambioPassword = true;
+    protected Boolean requiereCambioPassword = false; // Solo para correr el ejemplo sin cambiar contraseña. EN PRODUCCION CAMBIAR A TRUE
 
     public Usuario(String apellido, String nombre, String dni, String mail, Rol rol) {
         this.apellido = apellido;

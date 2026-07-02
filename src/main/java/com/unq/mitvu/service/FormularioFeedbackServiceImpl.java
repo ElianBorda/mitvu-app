@@ -32,4 +32,9 @@ public class FormularioFeedbackServiceImpl implements FormularioFeedbackService 
     public List<FormularioFeedback> obtenerTodosLosFeedbacks() {
         return formularioFeedbackDAO.findAll();
     }
+
+    @Override
+    public void eliminarTodo() {
+        formularioFeedbackDAO.deleteAll();
+    }
 }
