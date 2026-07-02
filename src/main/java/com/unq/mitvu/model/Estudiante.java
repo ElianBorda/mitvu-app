@@ -30,11 +30,11 @@ public class Estudiante extends Usuario {
     }
 
     public int getCantidadDeAsistencias() {
-        return (int) asistencias.stream().filter(Asistencia::getAsistio).count();
+        return (int) asistencias.stream().filter(asistencia -> asistencia.getTipoDeAsistencia().equals(TipoDeAsistencia.PRESENTE)).count();
     }
 
     public int getCantidadDeFaltas(){
-        return (int) asistencias.stream().filter(asistencia -> !asistencia.getAsistio()).count();
+        return (int) asistencias.stream().filter(asistencia -> asistencia.getTipoDeAsistencia().equals(TipoDeAsistencia.AUSENTE)).count();
     }
 
     public void agregarAsistencia(Asistencia asistencia) {

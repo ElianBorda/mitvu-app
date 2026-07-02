@@ -14,7 +14,6 @@ public class ComisionResumenDTO {
     private String carrera;
     private String horarioInicio;
     private String horarioFin;
-    private String diaHabil;
     private Turno turno;
     private String aula;
 }

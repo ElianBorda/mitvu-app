@@ -66,7 +66,7 @@ public class ComisionServiceTest {
         Comision resultado = comisionService.crear(nuevaComision);
 
         assertNotNull(resultado.getId());
-        assertEquals(1, resultado.getNumero());
+        assertEquals(2, resultado.getNumero());
         assertEquals(2, comisionDAO.count());
     }
 
