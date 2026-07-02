@@ -19,8 +19,8 @@ public class EmailServiceImpl implements EmailService{
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            helper.setFrom("eliancamiloalejandro@gmail.com");
-            helper.setTo("eliancamiloalejandro@gmail.com");
+            helper.setFrom("nachoferro112233@gmail.com");
+            helper.setTo("nachoferro112233@gmail.com");
             helper.setSubject("⚠️ Aviso de faltas — Taller de Vida Universitaria");
 
             String htmlContent = """
@@ -140,9 +140,8 @@ public class EmailServiceImpl implements EmailService{
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            helper.setFrom("eliancamiloalejandro@gmail.com");
-            // Apuntamos todos los correos a la dirección solicitada
-            helper.setTo("eliancamiloalejandro@gmail.com");
+            helper.setFrom("nachoferro112233@gmail.com");
+            helper.setTo("nachoferro112233@gmail.com");
             helper.setSubject("📢 Nuevo Anuncio: " + titulo + " — Taller de Vida Universitaria");
 
             String htmlContent = """
@@ -222,8 +221,8 @@ public class EmailServiceImpl implements EmailService{
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            helper.setFrom("eliancamiloalejandro@gmail.com");
-            helper.setTo("eliancamiloalejandro@gmail.com");
+            helper.setFrom("nachoferro112233@gmail.com");
+            helper.setTo("nachoferro112233@gmail.com");
             helper.setSubject("Solicitud Aprobada — Taller de Vida Universitaria");
 
             String htmlContent = """
@@ -273,8 +272,8 @@ public class EmailServiceImpl implements EmailService{
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            helper.setFrom("eliancamiloalejandro@gmail.com");
-            helper.setTo("eliancamiloalejandro@gmail.com");
+            helper.setFrom("nachoferro112233@gmail.com");
+            helper.setTo("nachoferro112233@gmail.com");
             helper.setSubject("Información sobre tu solicitud — Taller de Vida Universitaria");
 
             String htmlContent = """
